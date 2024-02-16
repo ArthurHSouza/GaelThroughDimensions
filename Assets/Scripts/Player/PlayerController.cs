@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Basic Attributes")]
+    [SerializeField] public float damage;
+    [SerializeField] public float health;
+
     [Header("Mobility")]
     [SerializeField] public Vector2 tempVelocity; //make changes to this velocity, PLEASE don`t use the one in Rigidbody directly
     //you can get the player attributes by using tempVelocity.x for example
@@ -12,13 +16,14 @@ public class PlayerController : MonoBehaviour
 
     [Header("Jump")]
     [SerializeField] public float jumpForce;
-    [SerializeField] public float gravity;
+    [SerializeField] private float gravity;
+    private bool isJumping;
 
 
-    [Header("Collsion")]
-    private bool isGrounded;
-    private CapsuleCollider2D playerCollider;
+    [Header("Collision")]
     [SerializeField] LayerMask playerLayer;
+    public bool isGrounded { get; private set; }
+    private CapsuleCollider2D playerCollider;
 
     //Input
     private float horizontalInput;
@@ -40,31 +45,37 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate() //put all Physics related methods here
     {
         Walk();
-        if(verticalInput> 0)Jump();
+        Jump();
         Gravity();
     }
 
     private void Walk() {
-        tempVelocity.x += Mathf.Abs(tempVelocity.x) < maxSpeed ? horizontalInput * acceleration : 0; //accelerates the player accordingly to the input
-        tempVelocity.x += Mathf.Abs(tempVelocity.x) > 0 ? -tempVelocity.x / 10 : 0; //makes the player stop, friction
+        if (horizontalInput != 0) { //accelerates the player accordingly to the input
+            tempVelocity.x += Mathf.Abs(tempVelocity.x) < maxSpeed ? horizontalInput * acceleration : 0; 
+        } 
+        if(Mathf.Sign(horizontalInput) != Mathf.Sign(tempVelocity.x) || horizontalInput == 0) { //makes the player stop, friction
+            tempVelocity.x += Mathf.Abs(tempVelocity.x) > 0 ? -tempVelocity.x / 10 : 0; 
+        } 
 
     }
 
     private void CollisionCheck() {
-        isGrounded = Physics2D.CapsuleCast(transform.position,playerCollider.size - new Vector2(0,0.1f),playerCollider.direction,0,Vector2.down,0.1f,~playerLayer);
-        Debug.Log(isGrounded);
+        isGrounded = Physics2D.CapsuleCast(playerCollider.bounds.center, playerCollider.bounds.size - new Vector3(0.2f, 0f, 0f)
+            , playerCollider.direction, 0, Vector2.down, 0.1f, ~playerLayer); //hits sends an capsule cast a little bit smaller than the player
+        //it`s a little smaller to prevent collision problems
     }
     private void Jump() {
-        tempVelocity.y = jumpForce;
+        if(isJumping && isGrounded) tempVelocity.y = jumpForce;
     }
     private void Gravity() {
-        tempVelocity.y -= gravity;
+        tempVelocity.y -= !isGrounded && tempVelocity.y > -maxSpeed? gravity : 0; //the comparison with maxSpeed adds a terminal velocity, change it for a specific variable later if needed
+        if (isGrounded && !isJumping) tempVelocity.y = 0;
     }
     private void PlayerInput(){
         //horizontal and Vertical Movement
         horizontalInput = Input.GetAxis("Horizontal");
         verticalInput = Input.GetAxis("Vertical");
-
         //jump
+        isJumping = Input.GetKey(KeyCode.Space);
     }
 }
