@@ -37,7 +37,6 @@ public class PlayerController : MonoBehaviour
     }
     void Update()
     {
-
         PlayerInput();
         CollisionCheck();
         rb.velocity = tempVelocity; //THIS SHOULD ALWAYS BE THE LAST LINE!!!!!
