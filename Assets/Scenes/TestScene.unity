@@ -982,6 +982,10 @@ PrefabInstance:
       propertyPath: maxSpeed
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 2197757329376937635, guid: b8a0933dac35b554285f2403c19c6dda, type: 3}
+      propertyPath: entityLayer.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 4637413291574829362, guid: b8a0933dac35b554285f2403c19c6dda, type: 3}
       propertyPath: m_LocalPosition.x
       value: -4.5604687
