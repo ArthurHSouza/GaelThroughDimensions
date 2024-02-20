@@ -11,12 +11,4 @@ public class PlayerAnimator : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         playerRB = GetComponentInParent<Rigidbody2D>();
     }
-    private void LateUpdate()
-    {
-        CheckDirection();
-    }
-    private void CheckDirection() {
-        spriteRenderer.flipX = playerRB.velocity.x > 0? true : false;
-
-    }
 }

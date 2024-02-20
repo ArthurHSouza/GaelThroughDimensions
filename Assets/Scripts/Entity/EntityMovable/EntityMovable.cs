@@ -25,6 +25,8 @@ public abstract class EntityMovable : Entity
     //ArrayList<Buff>
     //ArrayList<Attack>;
     protected Rigidbody2D rb;
+
+    bool isFliped = false;
     protected override void onStart()
     {
         base.onStart();
@@ -47,5 +49,19 @@ public abstract class EntityMovable : Entity
         //the comparison with maxSpeed adds a terminal velocity, change it for a specific variable later if needed
         tempVelocity.y -= !isGrounded && tempVelocity.y > -maxSpeed ? gravity : 0; 
         if (isGrounded && !isJumping) tempVelocity.y = 0;
+    }
+
+    private void LateUpdate()
+    {
+        SideCheck();
+    }
+
+    private void SideCheck()
+    {
+        if ((tempVelocity.x < 0 && !isFliped) || (tempVelocity.x > 0 && isFliped))
+        {
+            transform.localScale = new Vector3(transform.localScale.x * -1f, transform.localScale.y, transform.localScale.z);
+            isFliped = !isFliped;
+        }
     }
 }
