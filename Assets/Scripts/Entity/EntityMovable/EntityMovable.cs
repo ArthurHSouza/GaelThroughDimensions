@@ -11,11 +11,11 @@ public abstract class EntityMovable : Entity
     [SerializeField] public Vector2 tempVelocity; //make changes to this velocity, PLEASE don`t use the one in Rigidbody directly
     //you can get the player attributes by using tempVelocity.x for example
     [SerializeField] public float acceleration;
-    [SerializeField] public float maxSpeed;
+    [SerializeField] public float maxSpeed = 1;
 
     [Header("Jump")]
-    [SerializeField] public float jumpForce;
-    [SerializeField] protected float gravity;
+    [SerializeField] public float jumpForce = 1;
+    [SerializeField] protected float gravity = 1;
     protected bool isJumping;
 
     [Header("Collision")]
