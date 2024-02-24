@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7679101421534584946}
   - component: {fileID: 5880013244655392156}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: PatrolPoint
   m_TagString: PatrolPointTag
   m_Icon: {fileID: 0}
