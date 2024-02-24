@@ -928,7 +928,7 @@ GameObject:
   - component: {fileID: 2086947818}
   - component: {fileID: 2086947817}
   - component: {fileID: 2086947816}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: GenericEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -952,7 +952,7 @@ MonoBehaviour:
   tempVelocity: {x: 0, y: 0}
   acceleration: 0
   maxSpeed: 5
-  jumpForce: 5
+  jumpForce: 20
   gravity: 1
   entityLayer:
     serializedVersion: 2
@@ -1101,6 +1101,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PatrolPointRight
       objectReference: {fileID: 0}
+    - target: {fileID: 4771407798032169067, guid: a55d5326f4ba09c46859efae88cd193b, type: 3}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7679101421534584946, guid: a55d5326f4ba09c46859efae88cd193b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1131,11 +1135,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7679101421534584946, guid: a55d5326f4ba09c46859efae88cd193b, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 16.26
+      value: 17.14
       objectReference: {fileID: 0}
     - target: {fileID: 7679101421534584946, guid: a55d5326f4ba09c46859efae88cd193b, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -2.26
+      value: -1.81
       objectReference: {fileID: 0}
     - target: {fileID: 7679101421534584946, guid: a55d5326f4ba09c46859efae88cd193b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1338,6 +1342,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4637413291574829362, guid: b8a0933dac35b554285f2403c19c6dda, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6162392760987816093, guid: b8a0933dac35b554285f2403c19c6dda, type: 3}
+      propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6344984688095331560, guid: b8a0933dac35b554285f2403c19c6dda, type: 3}
