@@ -15,7 +15,7 @@ public abstract class EntityMovable : Entity
 
     [Header("Jump")]
     [SerializeField] public float jumpForce;
-    [SerializeField] protected float gravity;
+    [SerializeField] public float gravity;
     protected bool isJumping;
 
     [Header("Collision")]
@@ -42,7 +42,7 @@ public abstract class EntityMovable : Entity
 
     protected void Jump()
     {
-        if (isJumping) tempVelocity.y = jumpForce;
+        if (isJumping && isGrounded) tempVelocity.y = jumpForce;
     }
     protected void Gravity()
     {
