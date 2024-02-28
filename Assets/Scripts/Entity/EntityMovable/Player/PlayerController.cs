@@ -7,6 +7,15 @@ public class PlayerController : EntityMovable
     //Input
     private float horizontalInput;
     private float verticalInput;
+    private bool pressedJump;
+
+    //Jump
+    private float lastTimeTouchedGround = -5;
+    [Header("Jump Modifiers")]
+    [SerializeField] private float coyoteTime;
+    [SerializeField] private float jumpBufferDuration;
+    private float timeHoldingJump; //to help with variable jump heights
+    private float jumpBuffer= -5; //to prevent an accidental jump at the start
 
     void Start()
     {
@@ -16,6 +25,8 @@ public class PlayerController : EntityMovable
     {
         PlayerInput();
         CollisionCheck();
+        JumpCheck();
+
         rb.velocity = tempVelocity; //THIS SHOULD ALWAYS BE THE LAST LINE!!!!!
     }
     private void FixedUpdate() //put all Physics related methods here
@@ -41,11 +52,27 @@ public class PlayerController : EntityMovable
         //it`s a little smaller to prevent collision problems
     }
 
+    private void JumpCheck() {
+        if(isGrounded) lastTimeTouchedGround = Time.time; //checking the last frame that the player was on the ground
+        if (pressedJump) jumpBuffer = Time.time; //checking the last frame that the player touched the ground
+
+        bool jumpBufferCondition = Time.time - jumpBuffer <= jumpBufferDuration;
+        bool coyoteCondition = Time.time - lastTimeTouchedGround <= coyoteTime;
+        Debug.Log(coyoteCondition);
+        if (jumpBufferCondition && coyoteCondition)
+        {
+            isJumping = true;
+        }
+        else if(!isGrounded) {
+            isJumping= false;
+        }
+    }
+
     private void PlayerInput(){
         //horizontal and Vertical Movement
         horizontalInput = Input.GetAxis("Horizontal");
         verticalInput = Input.GetAxis("Vertical");
         //jump
-        isJumping = Input.GetKey(KeyCode.Space);
+        pressedJump = Input.GetKeyDown(KeyCode.Space);
     }
 }
