@@ -154,7 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   version: 1
   data:
-    dataString: UEsDBBQAAAgIAACwn+ttl+xmbwIAACgFAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQFlVMFy2jAQ/RVG58Jg4wTorXUI6SEJU9rJxRdhrbEGWfJIcoBk+PeuZBk7lAvy27ert2/X/iRcmhpyq/Rac/asGJDvI+LO5NuoDz7Bie6V3PIP6DhvnNnSkajn/KaWK8Qjl2ZUBVbz/IfcC0eeIthIXihdrdgeUmWsQbigwgCGtLIuWyL0OSIn/BsvXcoZT/HcnT7wtJyOLnjMQVrQPXU5WbrfPPA7dktuZC5oVQNzyvucJA7shWdJbCkQnPxcCcFN0EPsufb9prQ2DXaDBMYp9udFRJMZAiXwfWmd2mH6a1EYsEGTpucHrtGoti75qVr3KmoOrbB3KhovIW5VtUWf/4uPIx8utKqeunujqbvDljw//KbnnBo7sHcIPwyke3+OVBzoTsBbCfJFrbVqJMOg1Y1LbQzED/3jtbW0hPzQ463UG7Cpe8Ov05zMFkm0uJ/dr8bTeRiVa+jirTilglc7x58kLbAVytvv9wE0DuoXqvfbYkJdRJ2kvwb+0P1wrULgkWtjMRRalk7rTjXaUcnKG+haa2yqtAQPhw5qkFTY8wbL2Nt53sQG195EHql7gcLlIda9FzcpHu750+lNaKOO18mZUh2fwZSvjRVcQi/aBV7Qp1RJ2a7b0JMubdvoguaDtH3D2dc9Iwt2Ny+SJFnM7thiB/n4PoqjeRLN4iSnd3GyJH4RucQ+qdi0QoM9OLWhJxK3rvuwjNaa1n73mabHNf+o1MBzLgu1zTWAfP1awoDGW/AtZSvG0aEtWMulHzj5zIhQ+QFYdi2U+VZXJ6tp1lfJSM3flXVIRlL/JcmIg6+bvdHwzuHoLu+KXcjlH1BLAwQUAAAICAAAsJ/r6oger20AAAB4AAAACQAkAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAatWKkstKs7Mz1OyUjDRM9IzNNdRUEovSizIKAaKGII4pZkpIHa0kkWKqXmaiYmJhbFpikVSarKumaGRobmJobGRSXKiqZGJpVIsUH1JZUGqX2JuKkRPQGJJRlpmXkpmXrqee1FmijvIaKXYWgBQSwECLQAUAAAICAAAsJ/rbZfsZm8CAAAoBQAACwAkAAAAAAAAAAAAAAAAAAAAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQFQSwECLQAUAAAICAAAsJ/r6oger20AAAB4AAAACQAkAAAAAAAAAAAAAAC8AgAAbWV0YS5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0BUEsFBgAAAAACAAIAuAAAAHQDAAAAAA==
+    dataString: UEsDBBQAAAgIAACwn+sHfulWfQIAADsFAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQFlVMFy2jAQ/RVG58LYxgTorXUI6SEJE9LJxRdhrbEGWfJIcoBk+PeuZBs7lAvye7urt2/X/iJcmgoyq/Rac/akGJCfI+LO5MeoJx/hRPdKbvkndDHvnNnCBVEf80otV4iHLs2oEqzm2S+5Fy44QLCWPFe6XLE9JMpYg3BOhQGktLIuWyL0NSIn/BsvXcoZT9HcnT7xtAxGFzxmIC3oPnQ5WbrfXRc/if3zLGrT4kk8D6bxfDUO5r5ALTNBywqY66avE0dthXDqwyT22Ua4njIlBDetSGLPlTchoZWpsUUMYJxi015ZOJkiUADfF9ZJGqa/5LkB23qi6fmea3SvqUt+q8bSkppDo+yDitpLiBZeVVP06T9+HHo616p87O4NA3eHLXh2eKXnjBo78HwI3w+ke4OOVBzoTsB7AfJZrbWqJUPS6tql1gai+/7x2lpSQHbo8UbqDVhXvePXEU+mizhc3LkJtUNz7Vy8EadE8HLnoidxA2yF8ub7FQGNY/qD2v0CmbYqok7QXwNvdD/ctJZ44NpYpNqGpVO6U7V2oWTl7XON1TZRWoKHW/0VSCrseYNl7O00b7jBtTfMA3XvVHt5y3Wvyk2Kh/v4ILihNup4nZsp1PEJTPFSW8El9KId8Yw+JUrKZtmGnnRp21rnNBuk7WvOvm8ZWbDZPI/jeDGdscUOsvFdGIXzOJxGcUZnUbwkfg25xD6p2DRCW3twakNPJO5c960ZrTWt/OYzTY9r/lmqgedc5mqbaQD58r2EAY234DvKVoyjQ1uwlks/cPKVEqGyA7D0Wij1ra5OVtO0r5KSin8o65CUJP7jkhIHX/d6o+GDw9Fd3hW7kMs/UEsDBBQAAAgIAACwn+vqiB6vbQAAAHgAAAAJACQAbWV0YS5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0Bq1YqSy0qzszPU7JSMNEz0jM011FQSi9KLMgoBooYgjilmSkgdrSSRYqpeZqJiYmFsWmKRVJqsq6ZoZGhuYmhsZFJcqKpkYmlUixQfUllQapfYm4qRE9AYklGWmZeSmZeup57UWaKO8hopdhaAFBLAQItABQAAAgIAACwn+sHfulWfQIAADsFAAALACQAAAAAAAAAAAAAAAAAAABncmFwaDAuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAVBLAQItABQAAAgIAACwn+vqiB6vbQAAAHgAAAAJACQAAAAAAAAAAAAAAMoCAABtZXRhLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQFQSwUGAAAAAAIAAgC4AAAAggMAAAAA
     upgradeData: 
     file_cachedStartup: {fileID: 0}
     data_cachedStartup: 
@@ -704,7 +704,7 @@ Transform:
   m_GameObject: {fileID: 1035101945}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.33, y: -2.29, z: 0}
+  m_LocalPosition: {x: 16.59, y: -2.48, z: 0}
   m_LocalScale: {x: 40.9533, y: 8.3482, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1123,8 +1123,8 @@ MonoBehaviour:
   maxHealth: 3
   strenght: 1
   tempVelocity: {x: 0, y: 0}
-  acceleration: 0
-  maxSpeed: 500
+  acceleration: 100
+  maxSpeed: 250
   jumpForce: 20
   gravity: 1
   entityLayer:
@@ -1341,11 +1341,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7679101421534584946, guid: a55d5326f4ba09c46859efae88cd193b, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 12.04
+      value: 16.97
       objectReference: {fileID: 0}
     - target: {fileID: 7679101421534584946, guid: a55d5326f4ba09c46859efae88cd193b, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -2.39
+      value: -2.2
       objectReference: {fileID: 0}
     - target: {fileID: 7679101421534584946, guid: a55d5326f4ba09c46859efae88cd193b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

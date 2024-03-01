@@ -22,9 +22,10 @@ public class Enemy : EntityMovable
     protected float nextWayPointDistance = 3f;
     private Path path;
     private int currentWayPoint = 0;
-    bool reachEndOfPath = false;
+    private bool reachEndOfPath = false;
+    private Vector2 target;
 
-    Seeker seeker;
+    private Seeker seeker;
 
     private void Start()
     {
@@ -38,7 +39,7 @@ public class Enemy : EntityMovable
 
         seeker = GetComponent<Seeker>();
 
-        InvokeRepeating("UpdatePath", 0f, 0.5f);
+        InvokeRepeating("UpdatePath", 0f, 0.1f);
         //Only a example
         //moneyDropped = Damage * Life * DifficultyOfTheGame * Attacks.size()/2 
     }
@@ -46,7 +47,7 @@ public class Enemy : EntityMovable
     void UpdatePath()
     {
         if(seeker.IsDone())
-            seeker.StartPath(rb.position, player.GetComponent<Transform>().position, OnPathComplete);
+            seeker.StartPath(rb.position, target, OnPathComplete);
     }
     void OnPathComplete(Path p)
     {
@@ -58,17 +59,17 @@ public class Enemy : EntityMovable
     }
     private void Update()
     {
-       //CollisionCheck();
+       CollisionCheck();
        
-       //rb.velocity = tempVelocity;
+       rb.velocity = tempVelocity;
     }
     private void FixedUpdate() //put all Physics related methods here
     {
         //ChaseCheck();
         Walk();
-        //JumpCheck();
-        //Jump();
-        //Gravity();
+        JumpCheck();
+        Jump();
+        Gravity();
     }
 
     virtual protected void ChaseCheck()
@@ -105,12 +106,6 @@ public class Enemy : EntityMovable
 
         //Debug
 
-        if(memoryChaseTimeCouter.HasValue)
-        {
-            Debug.Log(memoryChaseTimeCouter);
-        }
-
-
         Debug.DrawLine(
          entityCollider.bounds.center,
          new Vector3(
@@ -123,49 +118,58 @@ public class Enemy : EntityMovable
 
     override protected void Walk()
     {
+        if (shallChasePlayer)
+            Chase();
+        else
+            Patrol();
 
         if (path == null) return;
         
         if(currentWayPoint >= path.vectorPath.Count)
         {
+            Debug.LogError("O inimigo atingiu o seu target");
+            /*
+            Call this function when not collided with the player or did not reach a patrol point 
+            With this you can adjust how many times updatePath will be called by the courotine/InvokeRepeating
+            UpdatePath();
+            */
             reachEndOfPath = true;
             return;
         }
         reachEndOfPath = false;
 
         Vector2 direction = ((Vector2)path.vectorPath[currentWayPoint] - rb.position).normalized;
-        Vector2 force = direction * maxSpeed * Time.deltaTime;
 
-        rb.AddForce(force);
+        tempVelocity.x += (tempVelocity.x < maxSpeed * Time.deltaTime) ? direction.x * acceleration * Time.deltaTime : 0;
+
+        if(Mathf.Sign(direction.x) != Mathf.Sign(tempVelocity.x))
+        {
+            tempVelocity.x = 0f;
+        }
 
         float distance = Vector2.Distance(rb.position, path.vectorPath[currentWayPoint]);
+
         if(distance < nextWayPointDistance)
         {
             currentWayPoint++;
         }
-        //if (shallChasePlayer)
-        //    Chase();
-        //else
-        //    Patrol();
     }
 
     virtual protected void Patrol()
     {
         if (shallPatrolRight)
         {
-            tempVelocity.x = maxSpeed;
+            target = patrolPoints[1].GetComponent<Transform>().position;
         }
         else
         {
-            tempVelocity.x = -maxSpeed;
+            target = patrolPoints[0].GetComponent<Transform>().position;
         }
     }
 
     virtual protected void Chase()
     {
-        if (Mathf.Approximately(player.transform.position.x, rb.transform.position.x))
-            return;
-        tempVelocity.x = maxSpeed * ((player.transform.position.x > rb.transform.position.x) ? 1 : -1);
+        target = player.GetComponent<Transform>().position;
     }
 
     virtual protected void JumpCheck()
