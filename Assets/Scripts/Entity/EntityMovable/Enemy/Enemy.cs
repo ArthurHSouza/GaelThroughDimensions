@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Pathfinding;
 
 public class Enemy : EntityMovable 
 {
@@ -9,6 +10,7 @@ public class Enemy : EntityMovable
     [SerializeField] protected GameObject [] patrolPoints;
     protected bool shallPatrolRight;
     private byte moneyDropped;
+    
     [Header("Chase Information")]
     [SerializeField] protected GameObject player;
     [SerializeField] private LayerMask playerMask;
@@ -16,7 +18,14 @@ public class Enemy : EntityMovable
     private float? memoryChaseTimeCouter = null;
     bool shallChasePlayer;
     //protected Potion potionDropped;
-    
+
+    protected float nextWayPointDistance = 3f;
+    private Path path;
+    private int currentWayPoint = 0;
+    bool reachEndOfPath = false;
+
+    Seeker seeker;
+
     private void Start()
     {
         onStart();
@@ -26,22 +35,40 @@ public class Enemy : EntityMovable
         base.onStart();
         shallPatrolRight = (1 == UnityEngine.Random.Range(0, 2));
         shallChasePlayer = false;
+
+        seeker = GetComponent<Seeker>();
+
+        InvokeRepeating("UpdatePath", 0f, 0.5f);
         //Only a example
         //moneyDropped = Damage * Life * DifficultyOfTheGame * Attacks.size()/2 
     }
+
+    void UpdatePath()
+    {
+        if(seeker.IsDone())
+            seeker.StartPath(rb.position, player.GetComponent<Transform>().position, OnPathComplete);
+    }
+    void OnPathComplete(Path p)
+    {
+        if(!p.error)
+        {
+            path = p;
+            currentWayPoint = 0;
+        }
+    }
     private void Update()
     {
-       CollisionCheck();
+       //CollisionCheck();
        
-        rb.velocity = tempVelocity;
+       //rb.velocity = tempVelocity;
     }
     private void FixedUpdate() //put all Physics related methods here
     {
-        ChaseCheck();
+        //ChaseCheck();
         Walk();
-        JumpCheck();
-        Jump();
-        Gravity();
+        //JumpCheck();
+        //Jump();
+        //Gravity();
     }
 
     virtual protected void ChaseCheck()
@@ -96,10 +123,30 @@ public class Enemy : EntityMovable
 
     override protected void Walk()
     {
-        if (shallChasePlayer)
-            Chase();
-        else
-            Patrol();
+
+        if (path == null) return;
+        
+        if(currentWayPoint >= path.vectorPath.Count)
+        {
+            reachEndOfPath = true;
+            return;
+        }
+        reachEndOfPath = false;
+
+        Vector2 direction = ((Vector2)path.vectorPath[currentWayPoint] - rb.position).normalized;
+        Vector2 force = direction * maxSpeed * Time.deltaTime;
+
+        rb.AddForce(force);
+
+        float distance = Vector2.Distance(rb.position, path.vectorPath[currentWayPoint]);
+        if(distance < nextWayPointDistance)
+        {
+            currentWayPoint++;
+        }
+        //if (shallChasePlayer)
+        //    Chase();
+        //else
+        //    Patrol();
     }
 
     virtual protected void Patrol()
