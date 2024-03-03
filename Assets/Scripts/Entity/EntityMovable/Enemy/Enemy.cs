@@ -39,7 +39,7 @@ public class Enemy : EntityMovable
 
         seeker = GetComponent<Seeker>();
 
-        InvokeRepeating("UpdatePath", 0f, 0.8f);
+        //InvokeRepeating("UpdatePath", 0f, 0.8f);
         //Only a example
         //moneyDropped = Damage * Life * DifficultyOfTheGame * Attacks.size()/2 
     }
@@ -65,11 +65,11 @@ public class Enemy : EntityMovable
     {
         CollisionCheck();
         ChaseCheck();
-        //Walk();
-        Fly();
-        //JumpCheck();
-        //Jump();
-        //Gravity();
+        Walk();
+        //Fly();
+        JumpCheck();
+        Jump();
+        Gravity();
     }
 
     virtual protected void ChaseCheck()
@@ -115,8 +115,20 @@ public class Enemy : EntityMovable
              ),
          Color.green);
     }
-
     override protected void Walk()
+    {
+        if (shallChasePlayer)
+            Chase();
+        else
+            Patrol();
+
+        float direction = (target.x > rb.position.x) ? 1 : -1;
+
+        tempVelocity.x += (Mathf.Abs(tempVelocity.x) < maxSpeed * Time.deltaTime || Mathf.Sign(tempVelocity.x) != Mathf.Sign(direction)) ? 
+            direction * acceleration * Time.deltaTime : 
+            0;
+    }
+    protected void WalkDEPRECATED()
     {
         if (shallChasePlayer)
             Chase();
