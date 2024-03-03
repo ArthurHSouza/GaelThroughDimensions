@@ -39,7 +39,7 @@ public class Enemy : EntityMovable
 
         seeker = GetComponent<Seeker>();
 
-        InvokeRepeating("UpdatePath", 0f, 0.1f);
+        InvokeRepeating("UpdatePath", 0f, 0.8f);
         //Only a example
         //moneyDropped = Damage * Life * DifficultyOfTheGame * Attacks.size()/2 
     }
@@ -65,7 +65,7 @@ public class Enemy : EntityMovable
     }
     private void FixedUpdate() //put all Physics related methods here
     {
-        //ChaseCheck();
+        ChaseCheck();
         Walk();
         JumpCheck();
         Jump();
@@ -127,12 +127,6 @@ public class Enemy : EntityMovable
         
         if(currentWayPoint >= path.vectorPath.Count)
         {
-            Debug.LogError("O inimigo atingiu o seu target");
-            /*
-            Call this function when not collided with the player or did not reach a patrol point 
-            With this you can adjust how many times updatePath will be called by the courotine/InvokeRepeating
-            UpdatePath();
-            */
             reachEndOfPath = true;
             return;
         }
@@ -140,11 +134,12 @@ public class Enemy : EntityMovable
 
         Vector2 direction = ((Vector2)path.vectorPath[currentWayPoint] - rb.position).normalized;
 
-        tempVelocity.x += (tempVelocity.x < maxSpeed * Time.deltaTime) ? direction.x * acceleration * Time.deltaTime : 0;
 
-        if(Mathf.Sign(direction.x) != Mathf.Sign(tempVelocity.x))
+        tempVelocity.x += (Mathf.Abs(tempVelocity.x) < maxSpeed * Time.deltaTime) ? Mathf.Sign(direction.x) * acceleration * Time.deltaTime : 0;
+
+        if(Mathf.Sign(direction.x) != Mathf.Sign(tempVelocity.x) && direction.x != 0f)
         {
-            tempVelocity.x = 0f;
+            tempVelocity.x += -tempVelocity.x;
         }
 
         float distance = Vector2.Distance(rb.position, path.vectorPath[currentWayPoint]);
