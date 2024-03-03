@@ -131,12 +131,14 @@ public class Enemy : EntityMovable
 
         Vector2 direction = ((Vector2)path.vectorPath[currentWayPoint] - rb.position).normalized;
 
-
-        tempVelocity.x += (Mathf.Abs(tempVelocity.x) < maxSpeed * Time.deltaTime) ? Mathf.Sign(direction.x) * acceleration * Time.deltaTime : 0;
-
-        if(Mathf.Sign(direction.x) != Mathf.Sign(tempVelocity.x) && direction.x != 0f)
+        if(Mathf.Abs(direction.x) > 0.3f)
         {
-            tempVelocity.x += -tempVelocity.x;
+            tempVelocity.x += (Mathf.Abs(tempVelocity.x) < maxSpeed * Time.deltaTime) ? Mathf.Sign(direction.x) * acceleration * Time.deltaTime : 0;
+
+            if(Mathf.Sign(direction.x) != Mathf.Sign(tempVelocity.x) && direction.x != 0f)
+            {
+                tempVelocity.x += -tempVelocity.x;
+            }
         }
 
         float distance = Vector2.Distance(rb.position, path.vectorPath[currentWayPoint]);
@@ -166,13 +168,25 @@ public class Enemy : EntityMovable
 
     virtual protected void JumpCheck()
     {
+        //Verifing if something will block his feet
         isJumping = Physics2D.Raycast(
             new Vector2(entityCollider.bounds.center.x, entityCollider.bounds.center.y * 1.3f),
             Vector2.right * Mathf.Sign(tempVelocity.x),
             1f,
             ~entityLayer & ~playerMask & ~Physics2D.IgnoreRaycastLayer
         );
-        
+
+        //if blocked than nothing must be on his ahead of his head
+        if (isJumping)
+        {
+            isJumping = !Physics2D.Raycast(
+            new Vector2(entityCollider.bounds.center.x, entityCollider.bounds.max.y),
+            Vector2.right * Mathf.Sign(tempVelocity.x),
+            1f,
+            ~entityLayer & ~playerMask & ~Physics2D.IgnoreRaycastLayer
+            );
+        }
+
         //Debug
         Debug.DrawLine(
             new Vector3(
