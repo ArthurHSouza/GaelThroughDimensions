@@ -65,10 +65,11 @@ public class Enemy : EntityMovable
     {
         CollisionCheck();
         ChaseCheck();
-        Walk();
-        JumpCheck();
-        Jump();
-        Gravity();
+        //Walk();
+        Fly();
+        //JumpCheck();
+        //Jump();
+        //Gravity();
     }
 
     virtual protected void ChaseCheck()
@@ -145,6 +146,33 @@ public class Enemy : EntityMovable
         float distance = Vector2.Distance(rb.position, path.vectorPath[currentWayPoint]);
 
         if(distance < nextWayPointDistance)
+        {
+            currentWayPoint++;
+        }
+    }
+
+    virtual protected void Fly()
+    {
+        if (shallChasePlayer)
+            Chase();
+        else
+            Patrol();
+
+        if (path == null) return;
+
+        //Reached the end of the path calculated at the moment
+        if (currentWayPoint >= path.vectorPath.Count)
+        {
+            return;
+        }
+
+        Vector2 direction = ((Vector2)path.vectorPath[currentWayPoint] - rb.position).normalized;
+        
+        tempVelocity = direction * maxSpeed * Time.deltaTime;
+
+        float distance = Vector2.Distance(rb.position, path.vectorPath[currentWayPoint]);
+
+        if (distance < nextWayPointDistance)
         {
             currentWayPoint++;
         }
