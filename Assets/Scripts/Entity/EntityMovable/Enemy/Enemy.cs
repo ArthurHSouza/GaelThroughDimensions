@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Pathfinding;
+using Unity.VisualScripting;
 
 public class Enemy : EntityMovable 
 {
@@ -176,17 +177,6 @@ public class Enemy : EntityMovable
             ~entityLayer & ~playerMask & ~Physics2D.IgnoreRaycastLayer
         );
 
-        //if blocked than nothing must be on his ahead of his head
-        if (isJumping)
-        {
-            isJumping = !Physics2D.Raycast(
-            new Vector2(entityCollider.bounds.center.x, entityCollider.bounds.max.y),
-            Vector2.right * Mathf.Sign(tempVelocity.x),
-            1f,
-            ~entityLayer & ~playerMask & ~Physics2D.IgnoreRaycastLayer
-            );
-        }
-
         //Debug
         Debug.DrawLine(
             new Vector3(
@@ -200,6 +190,42 @@ public class Enemy : EntityMovable
                 entityCollider.bounds.center.z
                 ),
             Color.red);
+        //
+
+        //if blocked than nothing must be on his ahead of his head
+        if (isJumping)
+        {
+            isJumping = !Physics2D.Raycast(
+            new Vector2(entityCollider.bounds.center.x, entityCollider.bounds.max.y),
+            Vector2.right * Mathf.Sign(tempVelocity.x),
+            1f,
+            ~entityLayer & ~playerMask & ~Physics2D.IgnoreRaycastLayer
+            );
+            return;
+        }
+
+        //Verifing if have a gap on the ground
+        isJumping = !Physics2D.Raycast(
+            new Vector2(entityCollider.bounds.center.x + entityCollider.size.x * 1.1f * Mathf.Sign(tempVelocity.x), entityCollider.bounds.min.y),
+            Vector2.down,
+            5f,
+            ~entityLayer & ~playerMask & ~Physics2D.IgnoreRaycastLayer
+        );
+
+        //Debug
+        Debug.DrawLine(
+        new Vector3(
+                entityCollider.bounds.center.x + entityCollider.size.x * 1.1f * Mathf.Sign(tempVelocity.x),
+                entityCollider.bounds.min.y,
+                entityCollider.bounds.center.z
+                ),
+            new Vector3(
+                entityCollider.bounds.center.x + entityCollider.size.x * 1.1f * Mathf.Sign(tempVelocity.x),
+                entityCollider.bounds.min.y - 5f,
+                entityCollider.bounds.center.z
+                ),
+            Color.red);
+        //
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
