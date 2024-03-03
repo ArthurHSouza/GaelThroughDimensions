@@ -2,9 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using Pathfinding;
+//Uncomment this if you want to implement a path finding
+//using Pathfinding;
 using Unity.VisualScripting;
 
+//A abstract enemy that moves only at the ground
 public class Enemy : EntityMovable 
 {
     [Header("Patrol Points")]
@@ -18,37 +20,36 @@ public class Enemy : EntityMovable
     [SerializeField] private float memoryChaseTimeLimit = 4f;
     private float? memoryChaseTimeCouter = null;
     protected bool shallChasePlayer;
+    public bool canMove { get; set; } = true;
     //protected Potion potionDropped;
+    protected Vector2 target;
 
-    protected float nextWayPointDistance = 3f;
-    private Path path;
-    private int currentWayPoint = 0;
-    private Vector2 target;
+    //Uncomment this if you want to implement a path finding
+    //protected float nextWayPointDistance = 3f;
+    //private Path path;
+    //private int currentWayPoint = 0;
+    //private Seeker seeker;
 
-    private Seeker seeker;
-
-    private void Start()
-    {
-        onStart();
-    }
     override protected void onStart()
     {
         base.onStart();
         shallPatrolRight = (1 == UnityEngine.Random.Range(0, 2));
         shallChasePlayer = false;
 
-        seeker = GetComponent<Seeker>();
-
+        //seeker = GetComponent<Seeker>();
         //InvokeRepeating("UpdatePath", 0f, 0.8f);
+
         //Only a example
         //moneyDropped = Damage * Life * DifficultyOfTheGame * Attacks.size()/2 
     }
 
+    /*Uncomment this if you want to implement a path finding
     void UpdatePath()
     {
         if(seeker.IsDone())
             seeker.StartPath(rb.position, target, OnPathComplete);
     }
+    
     void OnPathComplete(Path p)
     {
         if(!p.error)
@@ -57,20 +58,42 @@ public class Enemy : EntityMovable
             currentWayPoint = 0;
         }
     }
-    private void Update()
-    {  
-       rb.velocity = tempVelocity;
-    }
-    private void FixedUpdate() //put all Physics related methods here
+
+        protected void WalkDEPRECATED()
     {
-        CollisionCheck();
-        ChaseCheck();
-        Walk();
-        //Fly();
-        JumpCheck();
-        Jump();
-        Gravity();
+        if (shallChasePlayer)
+            Chase();
+        else
+            Patrol();
+
+        if (path == null) return;
+        
+        //Reached the end of the path calculated at the moment
+        if(currentWayPoint >= path.vectorPath.Count)
+        {
+            return;
+        }
+
+        Vector2 direction = ((Vector2)path.vectorPath[currentWayPoint] - rb.position).normalized;
+
+        if(Mathf.Abs(direction.x) > 0.3f)
+        {
+            tempVelocity.x += (Mathf.Abs(tempVelocity.x) < maxSpeed * Time.deltaTime) ? Mathf.Sign(direction.x) * acceleration * Time.deltaTime : 0;
+
+            if(Mathf.Sign(direction.x) != Mathf.Sign(tempVelocity.x) && direction.x != 0f)
+            {
+                tempVelocity.x += -tempVelocity.x;
+            }
+        }
+
+        float distance = Vector2.Distance(rb.position, path.vectorPath[currentWayPoint]);
+
+        if(distance < nextWayPointDistance)
+        {
+            currentWayPoint++;
+        }
     }
+    */
 
     virtual protected void ChaseCheck()
     {
@@ -128,67 +151,33 @@ public class Enemy : EntityMovable
             direction * acceleration * Time.deltaTime : 
             0;
     }
-    protected void WalkDEPRECATED()
-    {
-        if (shallChasePlayer)
-            Chase();
-        else
-            Patrol();
 
-        if (path == null) return;
+    //virtual protected void Fly()
+    //{
+    //    if (shallChasePlayer)
+    //        Chase();
+    //    else
+    //        Patrol();
+
+    //    if (path == null) return;
+
+    //    //Reached the end of the path calculated at the moment
+    //    if (currentWayPoint >= path.vectorPath.Count)
+    //    {
+    //        return;
+    //    }
+
+    //    Vector2 direction = ((Vector2)path.vectorPath[currentWayPoint] - rb.position).normalized;
         
-        //Reached the end of the path calculated at the moment
-        if(currentWayPoint >= path.vectorPath.Count)
-        {
-            return;
-        }
+    //    tempVelocity = direction * maxSpeed * Time.deltaTime;
 
-        Vector2 direction = ((Vector2)path.vectorPath[currentWayPoint] - rb.position).normalized;
+    //    float distance = Vector2.Distance(rb.position, path.vectorPath[currentWayPoint]);
 
-        if(Mathf.Abs(direction.x) > 0.3f)
-        {
-            tempVelocity.x += (Mathf.Abs(tempVelocity.x) < maxSpeed * Time.deltaTime) ? Mathf.Sign(direction.x) * acceleration * Time.deltaTime : 0;
-
-            if(Mathf.Sign(direction.x) != Mathf.Sign(tempVelocity.x) && direction.x != 0f)
-            {
-                tempVelocity.x += -tempVelocity.x;
-            }
-        }
-
-        float distance = Vector2.Distance(rb.position, path.vectorPath[currentWayPoint]);
-
-        if(distance < nextWayPointDistance)
-        {
-            currentWayPoint++;
-        }
-    }
-
-    virtual protected void Fly()
-    {
-        if (shallChasePlayer)
-            Chase();
-        else
-            Patrol();
-
-        if (path == null) return;
-
-        //Reached the end of the path calculated at the moment
-        if (currentWayPoint >= path.vectorPath.Count)
-        {
-            return;
-        }
-
-        Vector2 direction = ((Vector2)path.vectorPath[currentWayPoint] - rb.position).normalized;
-        
-        tempVelocity = direction * maxSpeed * Time.deltaTime;
-
-        float distance = Vector2.Distance(rb.position, path.vectorPath[currentWayPoint]);
-
-        if (distance < nextWayPointDistance)
-        {
-            currentWayPoint++;
-        }
-    }
+    //    if (distance < nextWayPointDistance)
+    //    {
+    //        currentWayPoint++;
+    //    }
+    //}
 
     virtual protected void Patrol()
     {
@@ -245,13 +234,14 @@ public class Enemy : EntityMovable
         }
 
         //Verifing if have a gap on the ground
-        isJumping = !Physics2D.Raycast(
+        isJumping = isGrounded &&
+            !Physics2D.Raycast(
             new Vector2(entityCollider.bounds.center.x + entityCollider.size.x * 1.1f * Mathf.Sign(tempVelocity.x), entityCollider.bounds.min.y),
             Vector2.down,
             5f,
             ~entityLayer & ~playerMask & ~Physics2D.IgnoreRaycastLayer
         );
-
+        
         //Debug
         Debug.DrawLine(
         new Vector3(

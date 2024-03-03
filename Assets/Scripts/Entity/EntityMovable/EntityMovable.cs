@@ -71,7 +71,7 @@ public abstract class EntityMovable : Entity
     protected void CollisionCheck()
     {
         isGrounded = Physics2D.CapsuleCast(entityCollider.bounds.center, entityCollider.bounds.size - new Vector3(0.2f, 0f, 0f)
-            , entityCollider.direction, 0, Vector2.down, 0.1f, ~entityLayer); //hits sends an capsule cast a little bit smaller than the player
+            , entityCollider.direction, 0, Vector2.down, 0.1f, ~entityLayer & ~Physics2D.IgnoreRaycastLayer); //hits sends an capsule cast a little bit smaller than the player
         //it`s a little smaller to prevent collision problems
     }
 }
