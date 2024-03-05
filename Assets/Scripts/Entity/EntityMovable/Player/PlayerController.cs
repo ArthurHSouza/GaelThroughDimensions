@@ -60,6 +60,7 @@ public class PlayerController : EntityMovable
             PlayerGravity();
             if(Input.GetKey(KeyCode.E)) GetComponent<Hook>().GoToObject();
             if (Input.GetKey(KeyCode.R)) GetComponent<Hook>().PullObject();
+            if (Input.GetKey(KeyCode.T)) GetComponent<Hook>().GoToAndLaunch();
         }
         Dash();
     }
@@ -81,9 +82,10 @@ public class PlayerController : EntityMovable
             tempVelocity.x = Mathf.Abs(tempVelocity.x) < maxSpeed ? tempVelocity.x + (horizontalInput * acceleration) : maxSpeed * horizontalInput;
         }
         else if (!isGrounded) { //speed on air
-            tempVelocity.x = Mathf.Abs(tempVelocity.x) < maxSpeed * airAcceleration ? (tempVelocity.x + (horizontalInput * acceleration)) : maxSpeed * airAcceleration * horizontalInput;
+            if (Mathf.Abs(horizontalInput) > 0) tempVelocity.x = Mathf.Abs(tempVelocity.x) < maxSpeed * airAcceleration ? (tempVelocity.x + (horizontalInput * acceleration)) : maxSpeed * airAcceleration * horizontalInput; //player is moving in the air
+            else tempVelocity.x = Mathf.Abs(tempVelocity.x) < maxSpeed * airAcceleration ? (tempVelocity.x + (horizontalInput * acceleration)) : maxSpeed * airAcceleration * Mathf.Sign(tempVelocity.x);//player released the move button
         }
-        if (Mathf.Sign(horizontalInput) != Mathf.Sign(tempVelocity.x) || horizontalInput == 0) { //makes the player stop, friction
+        if ((Mathf.Sign(horizontalInput) != Mathf.Sign(tempVelocity.x) || horizontalInput == 0) && isGrounded) { //makes the player stop, friction
             tempVelocity.x += Mathf.Abs(tempVelocity.x) > 0 ? -tempVelocity.x / 10 : 0;
         }
 
