@@ -20,13 +20,17 @@ public class Hook : MonoBehaviour
     private CircleCollider2D circleCollider;
 
     public LineRenderer hookRenderer;
+    private Rigidbody2D hookEndRB; //only aids the hook not to visualize the end at the closest one instead of the currently being pushed/pulled
 
     private Vector2 desiredDirection;
     private Vector2 currentDirection;
 
-    private bool isHooking; //flag to indicate if the hook is active
+    public bool isHooking; //flag to indicate if the hook is active
 
     private GameObject arrow;
+
+    private Coroutine hookCoroutine;
+    private Coroutine boostCoroutine;
 
     private void Start()
     {
@@ -84,7 +88,7 @@ public class Hook : MonoBehaviour
         {
             keepMomentum = false;
             isHooking = true;
-            StartCoroutine(HookCoroutine(callerRB,closestTargetRB));
+            hookCoroutine = StartCoroutine(HookCoroutine(callerRB,closestTargetRB));
         }
     }
     private void DrawLine() {
@@ -92,20 +96,25 @@ public class Hook : MonoBehaviour
         {
             hookRenderer.enabled = true;
             hookRenderer.SetPosition(0, transform.position);
-            hookRenderer.SetPosition(1, closestTargetRB.transform.position);
+            hookRenderer.SetPosition(1, hookEndRB.transform.position);
         }
         else {
             hookRenderer.enabled = false;
         }
     }
 
-    private IEnumerator HookCoroutine(Rigidbody2D caller, Rigidbody2D target)//REDDDDOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+    private IEnumerator HookCoroutine(Rigidbody2D caller, Rigidbody2D target)
     {
+        hookEndRB = closestTargetRB; //fix the issue of drawing the hook in another object end
         while (Vector2.Distance(caller.position, target.transform.position) > 1f && isHooking) //the isHooking is in the case of pull that goes further than the radius
-        {
+        {   
             if(currentDirection == Vector2.zero) desiredDirection = (target.transform.position - caller.transform.position).normalized;
             currentDirection = (target.transform.position - caller.transform.position).normalized;
             caller.AddForce(currentDirection * hookForce, ForceMode2D.Impulse);
+
+            if (!isHooking)
+                yield break;
+
             yield return null;
         }
 
@@ -114,7 +123,7 @@ public class Hook : MonoBehaviour
             caller.velocity = Vector2.zero;
         }
         else {
-            StartCoroutine(BoostCoroutine(0.2f,caller));
+            boostCoroutine = StartCoroutine(BoostCoroutine(0.2f,caller));
         }
         currentDirection = Vector2.zero;
         isHooking = false;
@@ -134,7 +143,13 @@ public class Hook : MonoBehaviour
     }
 
     public void StopHook() {
-        isHooking = false;
+        if (hookCoroutine != null){
+            StopCoroutine(hookCoroutine);
+            StopCoroutine(boostCoroutine);
+            hookCoroutine = null;
+            isHooking = false;
+            //callerRB.velocity = Vector2.zero;
+        }
     }
 
     public void PullObject(){
@@ -142,7 +157,7 @@ public class Hook : MonoBehaviour
         {
             keepMomentum = false;
             isHooking = true;
-            StartCoroutine(HookCoroutine(closestTargetRB, callerRB));
+            hookCoroutine = StartCoroutine(HookCoroutine(closestTargetRB, callerRB));
         }
     }
 
@@ -152,7 +167,7 @@ public class Hook : MonoBehaviour
         {
             keepMomentum = true;
             isHooking = true;
-            StartCoroutine(HookCoroutine(callerRB, closestTargetRB));
+            hookCoroutine = StartCoroutine(HookCoroutine(callerRB, closestTargetRB));
         }
 
     }

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Dash : MonoBehaviour
 {
-    [SerializeField] private float dashSpeed;
+    [SerializeField] public float dashSpeed;
     [SerializeField] private float dashDuration;
     [SerializeField] private float dashCooldown;
     [SerializeField][Tooltip("The game object has invunerability during dash?")] private bool invunerableDash;
@@ -20,6 +20,7 @@ public class Dash : MonoBehaviour
 
     private float timeSinceLastDash;
     private EntityMovable entity;
+
 
     private void Start()
     {
@@ -63,7 +64,7 @@ public class Dash : MonoBehaviour
         isDashing = false;
         entity.gravity = originalGravity;
         entity.maxSpeed = originalMaxSpeed;
-        entity.tempVelocity.x = originalMaxSpeed * Mathf.Sign(entity.tempVelocity.x);
+        entity.tempVelocity.x = originalMaxSpeed * originalDirection;
         timeSinceLastDash = 0;
     }
 }

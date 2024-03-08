@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations;
+using UnityEngine.InputSystem;
 
 public class PlayerController : EntityMovable
 {
@@ -16,6 +18,7 @@ public class PlayerController : EntityMovable
     [SerializeField] private LayerMask oneWayPlatforms;
     [SerializeField][Tooltip("Max  negative velocity that a player can achieve while falling")] private float terminalVelocity;
     [SerializeField][Range(1, 1.5f)] private float airAcceleration;
+    [SerializeField][Tooltip("More is less, because it is a division")] private float airResistence;
     [SerializeField][Tooltip("Time to jump after leaving a platform")] private float coyoteTime;
     [SerializeField][Tooltip("Amount of seconds before hitting the ground that activates jump")] private float jumpBufferDuration;
     [SerializeField][Tooltip("How strong the player goes back to the ground after releasing the jump button")] private float variableJumpHeightStrength;
@@ -33,16 +36,28 @@ public class PlayerController : EntityMovable
     private Dash dash;
     private int lastDirection;
     private bool pressedDash;
+    private bool canDash;
+
+    //Hook
+    private Hook hook;
+    private bool pressedHook;
+    private bool canHook;
+
+    //Plunging Attack
+    private PlungingAttack plgAtt;
+    private bool plungingCondition;
 
     void Start()
     {
         onStart();
-        originalMaxSpeed = maxSpeed;
+        hook = GetComponent<Hook>();
         dash = GetComponent<Dash>();
+        plgAtt = GetComponent<PlungingAttack>();
+        originalMaxSpeed = maxSpeed;
     }
     void Update()
     {
-        PlayerInput();
+        //PlayerInput();
         CollisionCheck();
         JumpCheck();
         ApexModifiers();
@@ -58,22 +73,41 @@ public class PlayerController : EntityMovable
             Walk();
             PlayerJump();
             PlayerGravity();
-            if(Input.GetKey(KeyCode.E)) GetComponent<Hook>().GoToObject();
-            if (Input.GetKey(KeyCode.R)) GetComponent<Hook>().PullObject();
-            if (Input.GetKey(KeyCode.T)) GetComponent<Hook>().GoToAndLaunch();
+            PlungingAttack();
         }
+        Hook();
         Dash();
     }
 
     private void LastDirectionLooked() {
 
         if (lastDirection == 0) lastDirection = 1; //initialization
+        if (horizontalInput == 0 && !isGrounded && Mathf.Abs(rb.velocity.x) > 0) lastDirection = (int)Mathf.Sign(rb.velocity.x); // to fix player hooking and changing direction
         if (horizontalInput > 0) lastDirection = 1;
         if (horizontalInput < 0) lastDirection = -1;
     }
 
+    private void Hook() {
+        if (canHook && pressedHook && !plungingCondition && !plgAtt.isPlunging) {
+            hook.GoToAndLaunch();
+            canHook = false;
+        }
+        if (dash.isDashing && hook.isHooking){
+            hook.StopHook();
+        }
+        if (isGrounded) {
+            canHook = true;
+        }
+        //if (Input.GetKey(KeyCode.E)) GetComponent<Hook>().GoToObject();
+        //if (Input.GetKey(KeyCode.R)) GetComponent<Hook>().PullObject();
+    }
+
     private void Dash() {
-        if (pressedDash) dash.ActivateDash(lastDirection);
+        if (pressedDash && canDash) {
+            dash.ActivateDash(lastDirection);
+            canDash = false;
+        }
+        if(isGrounded) canDash = true;
     }
 
     override protected void Walk() {
@@ -81,18 +115,26 @@ public class PlayerController : EntityMovable
         { //accelerates the player accordingly to the input
             tempVelocity.x = Mathf.Abs(tempVelocity.x) < maxSpeed ? tempVelocity.x + (horizontalInput * acceleration) : maxSpeed * horizontalInput;
         }
-        else if (!isGrounded) { //speed on air
-            if (Mathf.Abs(horizontalInput) > 0) tempVelocity.x = Mathf.Abs(tempVelocity.x) < maxSpeed * airAcceleration ? (tempVelocity.x + (horizontalInput * acceleration)) : maxSpeed * airAcceleration * horizontalInput; //player is moving in the air
-            else tempVelocity.x = Mathf.Abs(tempVelocity.x) < maxSpeed * airAcceleration ? (tempVelocity.x + (horizontalInput * acceleration)) : maxSpeed * airAcceleration * Mathf.Sign(tempVelocity.x);//player released the move button
+        else if (!isGrounded){
+            //speed on air
+            float targetSpeed = Mathf.Abs(horizontalInput) * maxSpeed * airAcceleration;
+            if (Mathf.Abs(tempVelocity.x) < targetSpeed){
+                tempVelocity.x += horizontalInput * acceleration / airResistence * 2; // to help it accelerate
+            }
+            else if (Mathf.Sign(horizontalInput) != Mathf.Sign(tempVelocity.x)){
+                //apply air deceleration when changing direction
+                tempVelocity.x += horizontalInput * acceleration / airResistence;
+            }
+            tempVelocity.x = Mathf.Clamp(tempVelocity.x, -maxSpeed * airAcceleration, maxSpeed * airAcceleration);
         }
         if ((Mathf.Sign(horizontalInput) != Mathf.Sign(tempVelocity.x) || horizontalInput == 0) && isGrounded) { //makes the player stop, friction
-            tempVelocity.x += Mathf.Abs(tempVelocity.x) > 0 ? -tempVelocity.x / 10 : 0;
+            tempVelocity.x += Mathf.Abs(tempVelocity.x) > 0 ? -tempVelocity.x  : 0;
         }
 
     }
 
     private void CollisionCheck() {
-        isGrounded = Physics2D.CapsuleCast(entityCollider.bounds.center, entityCollider.bounds.size - new Vector3(0.2f, 0f, 0f)
+        isGrounded = Physics2D.CapsuleCast(entityCollider.bounds.center, entityCollider.bounds.size - new Vector3(0.5f, 0f, 0f) // the 0.5 is because when flipping the gameobject the collider went inside the walls, causing this to activate
             , entityCollider.direction, 0, Vector2.down, 0.1f, ~entityLayer); //hits sends an capsule cast a little bit smaller than the player
         //it`s a little smaller to prevent collision problems
 
@@ -123,7 +165,7 @@ public class PlayerController : EntityMovable
 
     private void JumpCheck() {
         if (isGrounded) lastTimeTouchedGround = Time.time; //checking the last frame that the player was on the ground
-        if (pressedJump) jumpBuffer = Time.time; //checking the last frame that the player touched the ground
+        if (pressedJump) jumpBuffer = Time.time; //checking the frame that the player pressed jump
 
         bool jumpBufferCondition = Time.time - jumpBuffer <= jumpBufferDuration;
         bool coyoteCondition = Time.time - lastTimeTouchedGround <= coyoteTime;
@@ -141,24 +183,66 @@ public class PlayerController : EntityMovable
     }
     private void PlayerJump()
     {
-        if (isJumping) tempVelocity.y = jumpForce;
+        if (isJumping){tempVelocity.y = jumpForce;}
     }
 
     private void PlayerGravity() {
         tempVelocity.y -= !isGrounded && tempVelocity.y > -terminalVelocity ? gravity : 0;
         if (isGrounded && !isJumping) tempVelocity.y = 0;
     }
-    private void PlayerInput(){
-        //horizontal and Vertical Movement
-        horizontalInput = Input.GetAxis("Horizontal");
-        verticalInput = Input.GetAxis("Vertical");
-        //jump
-        pressedJump = Input.GetKeyDown(KeyCode.Space);
-        if(pressedJump ) { isHoldingJump = true; }
-        if (Input.GetKeyUp(KeyCode.Space)) {
+
+    private void PlungingAttack() {
+        if (plungingCondition && !plgAtt.isPlunging) { plgAtt.Attack(); }
+    }
+
+    //player input
+
+    public void InputJump(InputAction.CallbackContext context) {
+        if (context.started) {
+            pressedJump = true;
+            isHoldingJump = true;
+            StartCoroutine(ResetPressedJumpNextFrame());
+        }
+        if (context.canceled)
+        {
             isHoldingJump = false;
         }
-        //dash
-        pressedDash = Input.GetKey(KeyCode.LeftShift);
+    }
+    private IEnumerator ResetPressedJumpNextFrame(){
+        yield return null; //wait for the end of the frame
+        pressedJump = false;
+    }
+    public void InputPlungingAttack(InputAction.CallbackContext context){
+        plungingCondition = context.performed && verticalInput < -0.5f;
+    }
+    public void InputHorizontalMovement(InputAction.CallbackContext context) { 
+        horizontalInput = context.ReadValue<float>();
+    }
+    public void InputVerticallMovement(InputAction.CallbackContext context)
+    {
+        verticalInput = context.ReadValue<float>();
+    }
+
+    public void InputHook(InputAction.CallbackContext context)
+    {
+        pressedHook = context.performed;
+    }
+    public void InputDash(InputAction.CallbackContext context)
+    {
+        pressedDash = context.performed;
+    }
+    //old input system
+    private void PlayerInput(){ //only the jump here because for some reason it doesn`t work with the new system
+        //jump
+        pressedJump = Input.GetKeyDown(KeyCode.Space);
+        if (pressedJump)
+        {
+            isHoldingJump = true;
+        }
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            isHoldingJump = false;
+        }
+
     }
 }
