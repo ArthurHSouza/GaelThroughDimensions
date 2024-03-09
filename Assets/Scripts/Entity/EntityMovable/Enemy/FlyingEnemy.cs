@@ -39,12 +39,26 @@ public abstract class FlyingEnemy : Enemy
 
     virtual protected void Fly()
     {
-        if (shallChasePlayer)
-            Chase();
-        else
-            Patrol();
-
         if (path == null) return;
+        if (shallChasePlayer)
+        {
+            shallWaitToPatrol = false;
+            Chase();
+        }
+        else
+        {
+            if (!shallWaitToPatrol)
+                Patrol();
+            else if (timeWhenReachedPP + waitPatrolTime < Time.time)
+                shallWaitToPatrol = false;
+            else
+            {
+                tempVelocity = new Vector2();
+                return;
+            }
+
+        }
+
 
         //Reached the end of the path calculated at the moment
         if (currentWayPoint >= path.vectorPath.Count)

@@ -11,7 +11,7 @@ public class Enemy : EntityMovable
     [SerializeField] protected GameObject [] patrolPoints;
     [Header("Wait time after reach patrol point")]
     [SerializeField] protected float waitPatrolTime = 1f;
-    private float currentTime = 0f;
+    protected float timeWhenReachedPP = 0f;
     protected bool shallPatrolRight;
     protected bool shallWaitToPatrol = false;
     
@@ -92,7 +92,7 @@ public class Enemy : EntityMovable
         {
             if(!shallWaitToPatrol)
                 Patrol();
-            else if(currentTime + waitPatrolTime < Time.time)
+            else if(timeWhenReachedPP + waitPatrolTime < Time.time)
                 shallWaitToPatrol = false;
             else
             {
@@ -195,7 +195,7 @@ public class Enemy : EntityMovable
         {
             shallPatrolRight = !shallPatrolRight;
             shallWaitToPatrol = true;
-            currentTime = Time.time;
+            timeWhenReachedPP = Time.time;
         }
     }
 }
