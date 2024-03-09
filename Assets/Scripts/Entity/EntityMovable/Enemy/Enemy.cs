@@ -10,7 +10,7 @@ public class Enemy : EntityMovable
     [Header("Patrol Points")]
     [SerializeField] protected GameObject [] patrolPoints;
     [Header("Wait time after reach patrol point")]
-    [SerializeField] protected float waitPatrolTime = 1f;
+    [SerializeField] [Range(1,10)] protected float waitPatrolTime = 1f;
     protected float timeWhenReachedPP = 0f;
     protected bool shallPatrolRight;
     protected bool shallWaitToPatrol = false;
@@ -22,6 +22,7 @@ public class Enemy : EntityMovable
     [SerializeField] protected GameObject player;
     [SerializeField] private LayerMask playerMask;
     [SerializeField] private float memoryChaseTimeLimit = 4f;
+    [SerializeField] private float detectionPlayerRange = 5f; 
     private float? memoryChaseTimeCouter = null;
     protected bool shallChasePlayer;
     public bool canMove { get; set; } = true;
@@ -46,7 +47,7 @@ public class Enemy : EntityMovable
             entityCollider.direction, 
             0f, 
             Vector2.right * Mathf.Sign(tempVelocity.x),
-            5f,
+            detectionPlayerRange,
             playerMask);
         
         if(shallChasePlayer && !playerViewCast)
@@ -75,7 +76,7 @@ public class Enemy : EntityMovable
         Debug.DrawLine(
          entityCollider.bounds.center,
          new Vector3(
-             entityCollider.bounds.center.x + 5f * Mathf.Sign(tempVelocity.x),
+             entityCollider.bounds.center.x + detectionPlayerRange * Mathf.Sign(tempVelocity.x),
              entityCollider.bounds.center.y,
              entityCollider.bounds.center.z
              ),
