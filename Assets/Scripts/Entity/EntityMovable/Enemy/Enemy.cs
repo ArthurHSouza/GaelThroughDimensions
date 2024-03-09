@@ -9,7 +9,13 @@ public class Enemy : EntityMovable
 {
     [Header("Patrol Points")]
     [SerializeField] protected GameObject [] patrolPoints;
+    [Header("Wait time after reach patrol point")]
+    [SerializeField] protected float waitPatrolTime = 1f;
+    private float currentTime = 0f;
     protected bool shallPatrolRight;
+    protected bool shallWaitToPatrol = false;
+    
+
     private byte moneyDropped;
     
     [Header("Chase Information")]
@@ -78,9 +84,23 @@ public class Enemy : EntityMovable
     override protected void Walk()
     {
         if (shallChasePlayer)
+        {
+            shallWaitToPatrol = false;
             Chase();
+        }
         else
-            Patrol();
+        {
+            if(!shallWaitToPatrol)
+                Patrol();
+            else if(currentTime + waitPatrolTime < Time.time)
+                shallWaitToPatrol = false;
+            else
+            {
+                tempVelocity = new Vector2();
+                return;
+            }
+                
+        }
 
         float direction = (target.x > rb.position.x) ? 1 : -1;
 
@@ -174,6 +194,8 @@ public class Enemy : EntityMovable
             collision == patrolPoints[1].GetComponent<Collider2D>() && shallPatrolRight)
         {
             shallPatrolRight = !shallPatrolRight;
+            shallWaitToPatrol = true;
+            currentTime = Time.time;
         }
     }
 }

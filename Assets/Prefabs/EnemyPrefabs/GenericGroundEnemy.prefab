@@ -237,6 +237,7 @@ MonoBehaviour:
   patrolPoints:
   - {fileID: 3066130011144703054}
   - {fileID: 4659750137477613230}
+  waitPatrolTime: 2
   player: {fileID: 0}
   playerMask:
     serializedVersion: 2

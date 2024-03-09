@@ -381,13 +381,21 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 1550656798}
+    - target: {fileID: 1168519358884729694, guid: 0e6fe94b27631b1499572404b74fc61e, type: 3}
+      propertyPath: waitPatrolTime
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1168519358884729694, guid: 0e6fe94b27631b1499572404b74fc61e, type: 3}
+      propertyPath: memoryChaseTimeLimit
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 2826238301500027233, guid: 0e6fe94b27631b1499572404b74fc61e, type: 3}
       propertyPath: m_Name
       value: GenericGroundEnemy
       objectReference: {fileID: 0}
     - target: {fileID: 3023803890641346244, guid: 0e6fe94b27631b1499572404b74fc61e, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.5349318
+      value: 6.99
       objectReference: {fileID: 0}
     - target: {fileID: 3023803890641346244, guid: 0e6fe94b27631b1499572404b74fc61e, type: 3}
       propertyPath: m_LocalPosition.y
