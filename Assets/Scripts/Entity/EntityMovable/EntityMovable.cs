@@ -26,7 +26,7 @@ public abstract class EntityMovable : Entity
     //ArrayList<Attack>;
     protected Rigidbody2D rb;
 
-    bool isFliped = false;
+    bool isFlipped = false;
     protected override void onStart()
     {
         base.onStart();
@@ -61,10 +61,10 @@ public abstract class EntityMovable : Entity
 
     private void SideCheck()
     {
-        if ((tempVelocity.x < 0 && !isFliped) || (tempVelocity.x > 0 && isFliped))
+        if ((tempVelocity.x < 0 && !isFlipped) || (tempVelocity.x > 0 && isFlipped))
         {
             transform.localScale = new Vector3(transform.localScale.x * -1f, transform.localScale.y, transform.localScale.z);
-            isFliped = !isFliped;
+            isFlipped = !isFlipped;
         }
     }
 
