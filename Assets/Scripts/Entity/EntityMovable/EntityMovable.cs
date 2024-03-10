@@ -11,11 +11,11 @@ public abstract class EntityMovable : Entity
     [SerializeField] public Vector2 tempVelocity; //make changes to this velocity, PLEASE don`t use the one in Rigidbody directly
     //you can get the player attributes by using tempVelocity.x for example
     [SerializeField] public float acceleration;
-    [SerializeField] public float maxSpeed;
+    [SerializeField] public float maxSpeed = 1;
 
     [Header("Jump")]
-    [SerializeField] public float jumpForce;
-    [SerializeField] protected float gravity;
+    [SerializeField] public float jumpForce = 1;
+    [SerializeField] protected float gravity = 1;
     protected bool isJumping;
 
     [Header("Collision")]
@@ -26,7 +26,7 @@ public abstract class EntityMovable : Entity
     //ArrayList<Attack>;
     protected Rigidbody2D rb;
 
-    bool isFliped = false;
+    bool isFlipped = false;
     protected override void onStart()
     {
         base.onStart();
@@ -42,7 +42,10 @@ public abstract class EntityMovable : Entity
 
     protected void Jump()
     {
-        if (isJumping && isGrounded) tempVelocity.y = jumpForce;
+        if (isJumping && isGrounded)
+        {
+            tempVelocity.y = jumpForce;
+        }
     }
     protected void Gravity()
     {
@@ -58,10 +61,17 @@ public abstract class EntityMovable : Entity
 
     private void SideCheck()
     {
-        if ((tempVelocity.x < 0 && !isFliped) || (tempVelocity.x > 0 && isFliped))
+        if ((tempVelocity.x < 0 && !isFlipped) || (tempVelocity.x > 0 && isFlipped))
         {
             transform.localScale = new Vector3(transform.localScale.x * -1f, transform.localScale.y, transform.localScale.z);
-            isFliped = !isFliped;
+            isFlipped = !isFlipped;
         }
+    }
+
+    protected void CollisionCheck()
+    {
+        isGrounded = Physics2D.CapsuleCast(entityCollider.bounds.center, entityCollider.bounds.size - new Vector3(0.2f, 0f, 0f)
+            , entityCollider.direction, 0, Vector2.down, 0.1f, ~entityLayer & ~Physics2D.IgnoreRaycastLayer); //hits sends an capsule cast a little bit smaller than the player
+        //it`s a little smaller to prevent collision problems
     }
 }
