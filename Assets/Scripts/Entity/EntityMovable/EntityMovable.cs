@@ -5,7 +5,8 @@ using UnityEngine;
 public abstract class EntityMovable : Entity
 {
 
-    [SerializeField] public float strenght;
+    [SerializeField] public float strength;
+    [SerializeField] public float damage;
 
     [Header("Mobility")]
     [SerializeField] public Vector2 tempVelocity; //make changes to this velocity, PLEASE don`t use the one in Rigidbody directly

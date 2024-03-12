@@ -20,7 +20,7 @@ public class Enemy : EntityMovable
     
     [Header("Chase Information")]
     [SerializeField] protected GameObject player;
-    [SerializeField] private LayerMask playerMask;
+    [SerializeField] protected LayerMask playerMask;
     [SerializeField] private float memoryChaseTimeLimit = 4f;
     [SerializeField] private float detectionPlayerRange = 5f; 
     private float? memoryChaseTimeCouter = null;

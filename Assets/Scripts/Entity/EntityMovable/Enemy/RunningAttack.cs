@@ -1,0 +1,14 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class RunningAttack
+{
+    public void Attack(in Transform attackPoint, in float attackRange, in LayerMask playerLayer, 
+        in float damageAplied, ref Vector2 velocity, in float speedUp)
+    {
+        if (Physics2D.OverlapCircle(attackPoint.position, attackRange, playerLayer))
+            Debug.LogWarning($"Player shall recive damageAplied ({damageAplied})");
+        velocity.x = speedUp * Time.deltaTime;
+    }
+}
