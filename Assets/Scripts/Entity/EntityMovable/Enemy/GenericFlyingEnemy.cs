@@ -8,7 +8,7 @@ public class GenericFlyingEnemy : FlyingEnemy
     {
         onStart();
     }
-    override protected void onStart()
+    protected override void onStart()
     {
         base.onStart();
     }
@@ -22,5 +22,20 @@ public class GenericFlyingEnemy : FlyingEnemy
         ChaseCheck();
         if (!canMove) return;
         Fly();
+    }
+
+    override public void TakeDamage(float damage) {
+        health -= damage;
+
+        if(health <= 0 ) {
+            Die();
+        }
+    }
+
+    public override void Die()
+    {
+        //Die Animation
+
+        //Disable the entity
     }
 }

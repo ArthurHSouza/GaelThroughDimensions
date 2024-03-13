@@ -14,7 +14,7 @@ public abstract class FlyingEnemy : Enemy
     private int currentWayPoint = 0;
     private Seeker seeker;
 
-    override protected void onStart()
+    protected override void onStart()
     {
         base.onStart();
 
@@ -58,7 +58,6 @@ public abstract class FlyingEnemy : Enemy
             }
 
         }
-
 
         //Reached the end of the path calculated at the moment
         if (currentWayPoint >= path.vectorPath.Count)

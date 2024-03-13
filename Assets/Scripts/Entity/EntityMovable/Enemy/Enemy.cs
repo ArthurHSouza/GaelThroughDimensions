@@ -5,7 +5,7 @@ using System;
 using Unity.VisualScripting;
 
 //A abstract enemy that moves only at the ground
-public class Enemy : EntityMovable 
+public abstract class Enemy : EntityMovable 
 {
     [Header("Patrol Points")]
     [SerializeField] protected GameObject [] patrolPoints;
@@ -29,7 +29,7 @@ public class Enemy : EntityMovable
     //protected Potion potionDropped;
     protected Vector2 target;
 
-    override protected void onStart()
+    protected override void onStart()
     {
         base.onStart();
         shallPatrolRight = (1 == UnityEngine.Random.Range(0, 2));
@@ -131,7 +131,7 @@ public class Enemy : EntityMovable
     {
         //Verifing if something will block his feet
         isJumping = Physics2D.Raycast(
-            new Vector2(entityCollider.bounds.center.x, entityCollider.bounds.center.y * 1.3f),
+            new Vector2(entityCollider.bounds.center.x, entityCollider.bounds.center.y * 1.2f),
             Vector2.right * Mathf.Sign(tempVelocity.x),
             1f,
             ~entityLayer & ~playerMask & ~Physics2D.IgnoreRaycastLayer
@@ -199,4 +199,5 @@ public class Enemy : EntityMovable
             timeWhenReachedPP = Time.time;
         }
     }
+
 }

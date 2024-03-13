@@ -15,6 +15,7 @@ public abstract class Entity : MonoBehaviour
         entityCollider = GetComponent<CapsuleCollider2D>();
     }
 
+    public abstract void TakeDamage(float damage);
 
-    //protected void interaction();
+    public abstract void Die();
 }
