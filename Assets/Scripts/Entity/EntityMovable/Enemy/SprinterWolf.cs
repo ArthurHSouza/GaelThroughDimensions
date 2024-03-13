@@ -29,11 +29,11 @@ public class SprinterWolf : Enemy
         CollisionCheck();
         ChaseCheck();
         if (!canMove) return;
-        if(!shallChasePlayer)
+        //if(!shallChasePlayer)
         {
             Walk();
         }
-        else
+        if(shallChasePlayer)
         {
             runAttack.Attack(
                 attackPoint, 
@@ -41,7 +41,8 @@ public class SprinterWolf : Enemy
                 playerMask, 
                 damage*strength, 
                 ref tempVelocity,
-                (player.GetComponent<Rigidbody2D>().position.x < rb.position.x) ? -speedUp : speedUp
+                speedUp,
+                direction
                 );
         }
         //Only do the jumpCheck if is patrolling or is chasing but isn't seeing the player

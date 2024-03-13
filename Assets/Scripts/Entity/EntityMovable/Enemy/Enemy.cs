@@ -14,7 +14,7 @@ public class Enemy : EntityMovable
     protected float timeWhenReachedPP = 0f;
     protected bool shallPatrolRight;
     protected bool shallWaitToPatrol = false;
-    
+    protected float direction = 0f;
 
     private byte moneyDropped;
     
@@ -103,7 +103,7 @@ public class Enemy : EntityMovable
                 
         }
 
-        float direction = (target.x > rb.position.x) ? 1 : -1;
+        direction = (target.x > rb.position.x) ? 1 : -1;
 
         tempVelocity.x += (Mathf.Abs(tempVelocity.x) < maxSpeed * Time.deltaTime || Mathf.Sign(tempVelocity.x) != Mathf.Sign(direction)) ? 
             direction * acceleration * Time.deltaTime : 
