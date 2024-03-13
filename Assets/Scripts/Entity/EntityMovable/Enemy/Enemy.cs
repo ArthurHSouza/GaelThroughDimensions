@@ -23,7 +23,7 @@ public class Enemy : EntityMovable
     [SerializeField] protected LayerMask playerMask;
     [SerializeField] private float memoryChaseTimeLimit = 4f;
     [SerializeField] private float detectionPlayerRange = 5f; 
-    private float? memoryChaseTimeCouter = null;
+    protected float? memoryChaseTimeCouter = null;
     protected bool shallChasePlayer;
     public bool canMove { get; set; } = true;
     //protected Potion potionDropped;
@@ -156,7 +156,7 @@ public class Enemy : EntityMovable
         if (isJumping)
         {
             isJumping = !Physics2D.Raycast(
-            new Vector2(entityCollider.bounds.center.x, entityCollider.bounds.max.y),
+            new Vector2(entityCollider.bounds.center.x, entityCollider.bounds.max.y + jumpForce),
             Vector2.right * Mathf.Sign(tempVelocity.x),
             1f,
             ~entityLayer & ~playerMask & ~Physics2D.IgnoreRaycastLayer

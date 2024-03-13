@@ -241,7 +241,7 @@ MonoBehaviour:
   detectionPlayerRange: 5
   attackPoint: {fileID: 8947084839857175001}
   attackPointRange: 0.5
-  speedUp: 200
+  speedUp: 300
 --- !u!1 &5173918421242378216
 GameObject:
   m_ObjectHideFlags: 0

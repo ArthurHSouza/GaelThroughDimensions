@@ -17,8 +17,8 @@ public class SprinterWolf : Enemy
     }
     override protected void onStart()
     {
-        runAttack = new RunningAttack();
         base.onStart();
+        runAttack = new RunningAttack();
     }
     private void Update()
     {
@@ -40,12 +40,16 @@ public class SprinterWolf : Enemy
                 attackPointRange, 
                 playerMask, 
                 damage*strength, 
-                ref tempVelocity, 
+                ref tempVelocity,
                 (player.GetComponent<Rigidbody2D>().position.x < rb.position.x) ? -speedUp : speedUp
                 );
         }
-        JumpCheck();
-        Jump();
+        //Only do the jumpCheck if is patrolling or is chasing but isn't seeing the player
+        if(!shallChasePlayer || memoryChaseTimeCouter.HasValue)
+        {
+            JumpCheck();
+            Jump();
+        }
         Gravity();
     }
 
