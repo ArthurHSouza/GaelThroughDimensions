@@ -91,14 +91,16 @@ public class Enemy : EntityMovable
         }
         else
         {
-            if(!shallWaitToPatrol)
+            if (!shallWaitToPatrol) {
                 Patrol();
-            else if(timeWhenReachedPP + waitPatrolTime < Time.time)
-                shallWaitToPatrol = false;
-            else
+            }
+            else if (timeWhenReachedPP + waitPatrolTime < Time.time)
             {
-                tempVelocity = new Vector2();
-                return;
+                //shallWaitToPatrol = false;
+            }
+            else{
+                        tempVelocity = new Vector2();
+                        return;
             }
                 
         }
