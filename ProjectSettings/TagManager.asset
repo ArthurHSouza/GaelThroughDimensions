@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - PatrolPointTag
+  - Item
   layers:
   - Default
   - TransparentFX
