@@ -96,7 +96,7 @@ GameObject:
   - component: {fileID: 8398424302904282551}
   - component: {fileID: 6892539383846015427}
   - component: {fileID: 1191582974647105518}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: BombObj
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -133,6 +133,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bombRange: 2
   explosionTime: 5
+  ignoreLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  ignoreLayer2:
+    serializedVersion: 2
+    m_Bits: 256
   explosionEffect: {fileID: 7862260456081390484, guid: a8d8d5bd213442c41b25f541ddfb2eb8, type: 3}
 --- !u!58 &6892539383846015427
 CircleCollider2D:

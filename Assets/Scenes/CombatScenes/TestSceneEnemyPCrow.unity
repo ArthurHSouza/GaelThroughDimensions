@@ -808,7 +808,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1953505680}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Stage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1058,7 +1058,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3023803891796586777}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PCrowEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1305,12 +1305,9 @@ MonoBehaviour:
     m_Bits: 8
   memoryChaseTimeLimit: 4
   detectionPlayerRange: 10
-  playerDetectionRange: 10
-  playerDetectionOffset: -3
-  playerMaskTarget:
-    serializedVersion: 2
-    m_Bits: 8
-  memoryChaseTimeLimitTarget: 4
+  playerDetectionOffset: -2
+  playerRangeOffset: 4
+  dizzyTime: 4
   attackCooldown: 2
   attackDamage: 10
   attackRange: 2
