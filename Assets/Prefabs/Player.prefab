@@ -444,7 +444,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!70 &7572803533776243473
 CapsuleCollider2D:
@@ -508,13 +508,23 @@ MonoBehaviour:
     m_Bits: 64
   terminalVelocity: 12
   airAcceleration: 1.25
-  airResistence: 1
+  airResistance: 1
   coyoteTime: 0.15
   jumpBufferDuration: 0.15
   variableJumpHeightStrength: 10
   apexModifierDuration: 0.075
   apexModifierTolerance: 3
   apexModifierSpeedBoost: 1.025
+  dashEnabled: 1
+  hookEnabled: 1
+  jumpMultiplierAfterRope: 1.5
+  hookCooldown: 1
+  plungingAttackEnabled: 1
+  wallJumpEnabled: 1
+  wallJumpBoost: 0.8
+  wallJumpBoostDuration: 0.25
+  doubleJumpEnabled: 1
+  doubleJumpBoost: 1.2
 --- !u!114 &2530677277721914131
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -545,6 +555,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hookForce: 20
+  hookStopDistance: 0.4
   boostTime: 0.2
   desiredLayers:
     serializedVersion: 2
@@ -552,8 +563,13 @@ MonoBehaviour:
   collisionDetectionCircleRadius: 20
   arrowSprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
   enableDirectionArrow: 1
-  hookRenderer: {fileID: 1837877914469851510}
+  rayIgnoreLayers:
+    serializedVersion: 2
+    m_Bits: 72
   isHooking: 0
+  hookRenderer: {fileID: 1837877914469851510}
+  ropeSize: 4
+  cancelRope: 0
 --- !u!114 &7479631015653696254
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -600,6 +616,18 @@ MonoBehaviour:
       - m_Target: {fileID: 2197757329376937635}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
         m_MethodName: InputVerticallMovement
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2197757329376937635}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: InputOneWayPlatformsDescendCheck
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
