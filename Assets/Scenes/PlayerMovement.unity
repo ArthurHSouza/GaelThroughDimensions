@@ -615,14 +615,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5949145001873595699, guid: b8a0933dac35b554285f2403c19c6dda, type: 3}
-      propertyPath: defaultlAYER.m_Bits
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5949145001873595699, guid: b8a0933dac35b554285f2403c19c6dda, type: 3}
-      propertyPath: rayIgnoreLayers.m_Bits
-      value: 76
-      objectReference: {fileID: 0}
     - target: {fileID: 7999177213640976461, guid: b8a0933dac35b554285f2403c19c6dda, type: 3}
       propertyPath: m_Name
       value: Player

@@ -137,12 +137,7 @@ public class Hook : MonoBehaviour
 
         RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, collisionDetectionCircleRadius, ~rayIgnoreLayers);
 
-        if (hit.collider != null && hit.collider.gameObject.layer != 0) //if its not the default layer
-        {
-            return true; 
-        }
-
-        return false;
+        return hit.collider.gameObject.layer != 0;
     }
 
     private void CheckDirectionIndicator()
