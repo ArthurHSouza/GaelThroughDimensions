@@ -397,7 +397,7 @@ GameObject:
   - component: {fileID: 9015878339695200656}
   m_Layer: 3
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -502,7 +502,7 @@ MonoBehaviour:
   gravity: 1
   entityLayer:
     serializedVersion: 2
-    m_Bits: 136
+    m_Bits: 140
   oneWayPlatforms:
     serializedVersion: 2
     m_Bits: 64
@@ -560,12 +560,12 @@ MonoBehaviour:
   desiredLayers:
     serializedVersion: 2
     m_Bits: 128
-  collisionDetectionCircleRadius: 20
+  collisionDetectionCircleRadius: 8
   arrowSprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
   enableDirectionArrow: 1
   rayIgnoreLayers:
     serializedVersion: 2
-    m_Bits: 72
+    m_Bits: 76
   isHooking: 0
   hookRenderer: {fileID: 1837877914469851510}
   ropeSize: 4

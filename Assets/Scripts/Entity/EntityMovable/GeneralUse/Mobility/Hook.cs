@@ -13,22 +13,29 @@ using Vector3 = UnityEngine.Vector3;
 public class Hook : MonoBehaviour
 {
     [Header("Hook")]
-    [SerializeField][Tooltip("Force applied to the target game object")] 
+    [SerializeField]
+    [Tooltip("Force applied to the target game object")]
     private float hookForce;
     [SerializeField]
     [Tooltip("The distance to stop hooking before getting to the target")]
     private float hookStopDistance;
-    [SerializeField][Tooltip("Time in the air after the launch")] 
+    [SerializeField]
+    [Tooltip("Time in the air after the launch")]
     private float boostTime;
-    [SerializeField][Tooltip("The layer of the target game object")] 
+    [SerializeField]
+    [Tooltip("The layer of the target game object")]
     private LayerMask desiredLayers;
-    [SerializeField][Tooltip("The game object will check for gameobjects to hook in this circle, so a bigger number means bigger detection")] 
+    [SerializeField]
+    [Tooltip("The game object will check for gameobjects to hook in this circle, so a bigger number means bigger detection")]
     private float collisionDetectionCircleRadius;
-    [SerializeField][Tooltip("Don't need to assign if enableDirectionArrow isn`t enabled")] 
+    [SerializeField]
+    [Tooltip("Don't need to assign if enableDirectionArrow isn`t enabled")]
     private Sprite arrowSprite;
-    [SerializeField][Tooltip("For the player, creates an arrow in the direction of the launch")] 
+    [SerializeField]
+    [Tooltip("For the player, creates an arrow in the direction of the launch")]
     private bool enableDirectionArrow;
-    [SerializeField][Tooltip("Layers that will be ignored for the hook check")]
+    [SerializeField]
+    [Tooltip("Layers that will be ignored for the hook check")]
     private LayerMask rayIgnoreLayers;
 
     private bool keepMomentum;
@@ -74,7 +81,8 @@ public class Hook : MonoBehaviour
         circleCollider.radius = collisionDetectionCircleRadius;
         circleCollider.isTrigger = true;
 
-        if (hookRenderer == null) {
+        if (hookRenderer == null)
+        {
             hookRenderer = gameObject.AddComponent<LineRenderer>();
             hookRenderer.startWidth = 0.1f;
             hookRenderer.endWidth = 0.1f;
@@ -82,7 +90,8 @@ public class Hook : MonoBehaviour
             hookRenderer.startColor = Color.yellow;
             hookRenderer.endColor = Color.yellow;
         }
-        if (arrowSprite != null) {
+        if (arrowSprite != null)
+        {
             arrow = new GameObject("HookDirectionArrow");
             SpriteRenderer spriteRenderer = arrow.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = arrowSprite;
@@ -101,52 +110,45 @@ public class Hook : MonoBehaviour
         canPool = false;
         arrow.SetActive(false);
 
-        }
+    }
     private void Update()
     {
-        
+
         DrawLine();
 
         if (closestTargetRB == null)
         {
             isHooking = false; //to prevent cases where the object being pulled get away from the screen
         }
-        else{
-            noObjectBetweenTarget = true; //this is just for it to work, uncomment the lines to try to fix the bug
-            //RaycastHit hit;
-            //bool didHitTarget = ObstructionRaycastCheck(out hit);
-            //noObjectBetweenTarget = didHitTarget; 
-            //if (didHitTarget){
-            //    Debug.Log("hitted the layer!");
-            //}
-            //else{
-            //    Debug.Log("failed");
-            //}
-            //if (!noObjectBetweenTarget)arrow.SetActive(false);
+        else
+        {
+            noObjectBetweenTarget = ObstructionRaycastCheck();
+            if (!noObjectBetweenTarget) arrow.SetActive(false);
 
         }
         CheckDirectionIndicator();
-        PullEngine(); //the method check conditions before running, don`t worryd
+        PullEngine(); //the method check conditions before running, don`t worry
         ThrustEngine(); //the method check conditions before running, don`t worry
     }
-    private bool ObstructionRaycastCheck(out RaycastHit hit)
+    private bool ObstructionRaycastCheck()
     {
-        int layerMask = ~rayIgnoreLayers.value;
-
         Vector2 direction = (closestTargetRB.transform.position - callerRB.transform.position).normalized;
-        Debug.DrawRay(transform.position, direction * collisionDetectionCircleRadius/2, Color.red);
-        if (Physics.Raycast(transform.position, direction, out hit, collisionDetectionCircleRadius, layerMask))
+        Debug.DrawRay(transform.position, direction * collisionDetectionCircleRadius, Color.red);
+
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, collisionDetectionCircleRadius, ~rayIgnoreLayers);
+
+        if (hit.collider != null && hit.collider.gameObject.layer != 0) //if its not the default layer
         {
-            if (((1 << hit.collider.gameObject.layer) & desiredLayers.value) != 0)//if the hit game object is the desired object
-            {
-                return true;
-            }
+            return true; 
         }
+
         return false;
     }
 
-    private void CheckDirectionIndicator() {
-        if (enableDirectionArrow && noObjectBetweenTarget) {
+    private void CheckDirectionIndicator()
+    {
+        if (enableDirectionArrow && noObjectBetweenTarget)
+        {
             if (arrowSprite == null)
             {
                 Debug.LogWarning("Error, you forgot to assign the arrowSprite, please disable the variable " +
@@ -154,27 +156,33 @@ public class Hook : MonoBehaviour
             }
             else if (closestTargetRB != null)
             {
-                if(!arrow.activeSelf) arrow.SetActive(true);
+                if (!arrow.activeSelf) arrow.SetActive(true);
                 if (isHooking) arrow.transform.position = closestTargetRB.position + (desiredDirection * 2);
-                else { arrow.transform.position = closestTargetRB.position + 
-                        (Vector2)((closestTargetRB.transform.position - transform.position).normalized * 2);}
+                else
+                {
+                    arrow.transform.position = closestTargetRB.position +
+                        (Vector2)((closestTargetRB.transform.position - transform.position).normalized * 2);
+                }
 
 
             }
-            else {
+            else
+            {
                 arrow.SetActive(false);
             }
-            
+
         }
     }
-    private void DrawLine() {
+    private void DrawLine()
+    {
         if (isHooking)
         {
             hookRenderer.enabled = true;
             hookRenderer.SetPosition(0, transform.position);
             hookRenderer.SetPosition(1, hookEndRB.transform.position);
         }
-        else {
+        else
+        {
             hookRenderer.enabled = false;
         }
     }
@@ -183,10 +191,10 @@ public class Hook : MonoBehaviour
     {
         hookEndRB = closestTargetRB; //fix the issue of drawing the hook in another object end
 
-        while (Vector2.Distance(caller.position, target.transform.position) > 1f && isHooking && noObjectBetweenTarget) 
-            //the isHooking is in the case of pull that goes further than the radius
-        {   
-            if(currentDirection == Vector2.zero) desiredDirection = (target.transform.position - caller.transform.position).normalized;
+        while (Vector2.Distance(caller.position, target.transform.position) > 1f && isHooking && noObjectBetweenTarget)
+        //the isHooking is in the case of pull that goes further than the radius
+        {
+            if (currentDirection == Vector2.zero) desiredDirection = (target.transform.position - caller.transform.position).normalized;
             currentDirection = (target.transform.position - caller.transform.position).normalized;
             caller.AddForce(currentDirection * hookForce, ForceMode2D.Impulse);
 
@@ -200,16 +208,19 @@ public class Hook : MonoBehaviour
         {
             caller.velocity = Vector2.zero;
         }
-        else {
-            if(noObjectBetweenTarget) //to prevent the canceled hook from running the boost
-                boostCoroutine = StartCoroutine(BoostCoroutine(0.2f,caller));
+        else
+        {
+            if (noObjectBetweenTarget) //to prevent the canceled hook from running the boost
+                boostCoroutine = StartCoroutine(BoostCoroutine(0.2f, caller));
         }
         currentDirection = Vector2.zero;
         isHooking = false;
     }
 
-    public void RopeCheck() {
-        if (closestTargetRB != null && !isHooking) {
+    public void RopeCheck()
+    {
+        if (closestTargetRB != null && !isHooking)
+        {
             cancelRope = false;
             hookEndRB = closestTargetRB;
             isHooking = true;
@@ -220,7 +231,7 @@ public class Hook : MonoBehaviour
             }
         }
         RopeManager();
-            
+
     }
 
     public void RopeManager()
@@ -230,7 +241,8 @@ public class Hook : MonoBehaviour
             distanceJoint.enabled = true;
             isHooking = true;
         }
-        if(cancelRope) {
+        if (cancelRope)
+        {
             isHooking = false;
             distanceJoint.connectedBody = null;
             distanceJoint.enabled = false;
@@ -238,8 +250,10 @@ public class Hook : MonoBehaviour
         }
     }
 
-    public string GetTargetObjectTag() {
-        if (closestTargetRB != null){
+    public string GetTargetObjectTag()
+    {
+        if (closestTargetRB != null)
+        {
             return closestTargetRB.gameObject.tag;
         }
         else return "There`s no target object nearby";
@@ -249,7 +263,8 @@ public class Hook : MonoBehaviour
     private IEnumerator BoostCoroutine(float duration, Rigidbody2D caller)
     {
         float timer = 0f;
-        while (timer < duration){
+        while (timer < duration)
+        {
 
             caller.GetComponent<PlayerController>().tempVelocity = desiredDirection * hookForce;
 
@@ -259,8 +274,10 @@ public class Hook : MonoBehaviour
         }
     }
 
-    public void StopHook() {
-        if (hookCoroutine != null){
+    public void StopHook()
+    {
+        if (hookCoroutine != null)
+        {
             StopCoroutine(hookCoroutine);
             StopCoroutine(boostCoroutine);
             hookCoroutine = null;
@@ -268,11 +285,13 @@ public class Hook : MonoBehaviour
             //callerRB.velocity = Vector2.zero;
         }
     }
-    public void PullObject() {
+    public void PullObject()
+    {
         canPool = true;
         PullEngine();
     }
-    private void PullEngine(){
+    private void PullEngine()
+    {
         if (canPool)
         {
             if (!isPulling && closestTargetRB != null)
@@ -322,7 +341,7 @@ public class Hook : MonoBehaviour
     {
         if (canThrust)
         {
-            if (!isOnThrust && closestTargetRB != null )
+            if (!isOnThrust && closestTargetRB != null)
             {
                 hookEndRB = closestTargetRB;
                 currentlyBeingMovedRB = closestTargetRB;
@@ -338,7 +357,7 @@ public class Hook : MonoBehaviour
                 Vector2 direction = (currentlyBeingMovedRB.transform.position - callerRB.transform.position).normalized;
                 //the next 2 lines are to change how it behaves with an object based on velocity and entities that use temp velocity
                 if (!callerRB.GetComponent<EntityMovable>()) callerRB.AddForce(hookForce / 20 * direction * callerRB.mass, ForceMode2D.Impulse);
-                else callerRB.GetComponent<EntityMovable>().tempVelocity = hookForce  * direction * callerRB.mass;
+                else callerRB.GetComponent<EntityMovable>().tempVelocity = hookForce * direction * callerRB.mass;
             }
             else
             {
@@ -363,7 +382,8 @@ public class Hook : MonoBehaviour
     }
 
     //functions to assign the closestTargetRB
-    private void ExitRB(Collider2D collision) {
+    private void ExitRB(Collider2D collision)
+    {
         if ((desiredLayers.value & 1 << collision.gameObject.layer) > 0) //if the collision is a desired layer
         {
             Rigidbody2D targetRB = collision.attachedRigidbody;
@@ -375,7 +395,8 @@ public class Hook : MonoBehaviour
             }
         }
     }
-    private void StayRB(Collider2D collision) {
+    private void StayRB(Collider2D collision)
+    {
         if ((desiredLayers.value & 1 << collision.gameObject.layer) > 0) //if the collision is a desired layer
         {
             Rigidbody2D targetRB = collision.attachedRigidbody;
@@ -388,7 +409,7 @@ public class Hook : MonoBehaviour
                 {
                     enableDirectionArrow = false;
                 }
-                if(closestTargetRB.CompareTag("HookSpot"))
+                if (closestTargetRB.CompareTag("HookSpot"))
                 {
                     enableDirectionArrow = true;
                 }
@@ -397,16 +418,18 @@ public class Hook : MonoBehaviour
     }
 
     //collision case for enemies and pulling player
-    private void OnCollisionStay2D(Collision2D collision){
+    private void OnCollisionStay2D(Collision2D collision)
+    {
         StayRB(collision.collider);
     }
-    private void OnCollisionExit2D(Collision2D collision){
+    private void OnCollisionExit2D(Collision2D collision)
+    {
         ExitRB(collision.collider);
     }
 
 
     //trigger cases for hookspot and swingspot
-    private void OnTriggerStay2D(Collider2D collision) 
+    private void OnTriggerStay2D(Collider2D collision)
     {
         StayRB(collision);
     }
