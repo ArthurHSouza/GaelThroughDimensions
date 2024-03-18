@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class PlayerController : EntityMovable
@@ -14,6 +16,12 @@ public class PlayerController : EntityMovable
     public float itemPickableRadius = 10.0f;
     [Range(1.0f,20.0f)]
     public float forceMultiplyer = 5.0f;
+
+    [SerializeField]
+    private LayerMask itemLayer;
+
+    [SerializeField]
+    public int ItemPullMaxQuantity = 10;
 
     void Start()
     {
@@ -71,23 +79,25 @@ public class PlayerController : EntityMovable
     private void CollectablesVerifier()
     {
         //Vizualização do raycast de circulo
-        RaycastHit2D ItemPickableCircle = Physics2D.CircleCast(new Vector2(gameObject.transform.position.x, gameObject.transform.position.y), itemPickableRadius, new Vector2(0.0f, 0.0f));
-        if (ItemPickableCircle.transform.CompareTag("Item"))
+        Collider2D[] ItemPickableCircleCollider = Physics2D.OverlapCircleAll(gameObject.transform.position, itemPickableRadius, itemLayer);
+        for(int i = 0; i < ItemPickableCircleCollider.Length && i < ItemPullMaxQuantity; i++)
         {
-            //Pull item logic
-            Rigidbody2D ItemCollider = ItemPickableCircle.collider.attachedRigidbody;
-            if(ItemCollider == null)
+            var otherColl = ItemPickableCircleCollider[i];
+            if (otherColl.transform.CompareTag("Item"))
             {
-                Debug.LogWarning($"O item {ItemPickableCircle.transform.name} não possui rigidbody.Esse componente é essencial!");
-                return;
+                //Pull item logic
+                Rigidbody2D ItemCollider = otherColl.attachedRigidbody;
+                if(ItemCollider == null)
+                {
+                    Debug.LogWarning($"O item {ItemCollider.transform.name} não possui rigidbody.Esse componente é essencial!");
+                   continue;
+                }
+                ItemCollider.AddForce((gameObject.transform.position - ItemCollider.transform.position) * forceMultiplyer);
             }
-            
-            // Vetor entre os pontos A(Posição do item) até B(Player) {Vector2 = (B.x - A.x),(B.y - A.y)}
-            float deltaX = (gameObject.transform.position.x - ItemCollider.transform.position.x) * forceMultiplyer;
-            float deltaY = (gameObject.transform.position.y - ItemCollider.transform.position.y) * forceMultiplyer;
-            Vector2 deltaForce = new Vector2(deltaX,deltaY);
-            ItemCollider.AddForce(deltaForce);
+            else
+            {
+               Debug.LogWarning($"O item {otherColl.transform.name} está na layer de items e ele não é item. Favor alterar para layer correta!"); 
+            }
         }
     }
-
 }
