@@ -8,6 +8,7 @@ TagManager:
   - SwingSpot
   - Pullable
   - Thrust
+  - PatrolPointTag
   layers:
   - Default
   - TransparentFX
@@ -17,6 +18,8 @@ TagManager:
   - UI
   - OneWayPlatforms
   - Hookable
+  - Enemy
+  - Obstacle
   - 
   - 
   - 
