@@ -238,7 +238,7 @@ public class PlayerController : EntityMovable
 
     }
 
-    private void CollisionCheck() {
+    protected override void CollisionCheck() {
         isGrounded = Physics2D.CapsuleCast(entityCollider.bounds.center, entityCollider.bounds.size - new Vector3(0.5f, 0f, 0f) // the 0.5 is because when
                                                                                                                                 // flipping the gameobject the
                                                                                                                                 // collider went inside the
