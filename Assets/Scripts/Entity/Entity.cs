@@ -6,6 +6,7 @@ public abstract class Entity : MonoBehaviour
 {
     [Header("Basic Attributes")]
     [SerializeField] public float maxHealth;
+    [SerializeField] protected Animator animator; 
     protected float health;
 
     protected CapsuleCollider2D entityCollider;
@@ -15,6 +16,23 @@ public abstract class Entity : MonoBehaviour
         entityCollider = GetComponent<CapsuleCollider2D>();
     }
 
+    public virtual void TakeDamage(float damage) {
+        health -= damage;
+        animator.SetTrigger("Hurt");
 
-    //protected void interaction();
+        if (health <= 0) {
+            Die();
+        }
+    }
+
+    // Método para morrer
+    protected virtual void Die() {
+        //Die Animation
+        animator.SetBool("isDead", true);
+        
+        //Disable the entity
+        GetComponent<Rigidbody2D>().simulated = false;
+        GetComponent<Collider2D>().enabled = false;
+        this.enabled = false;
+    }
 }

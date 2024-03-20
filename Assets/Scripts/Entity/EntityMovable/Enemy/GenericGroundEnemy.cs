@@ -16,7 +16,9 @@ public class GenericGroundEnemy : Enemy
     private void Update()
     {
         rb.velocity = tempVelocity;
+        IsMoving();
     }
+
     private void FixedUpdate() //put all Physics related methods here
     {
         CollisionCheck();
@@ -26,5 +28,14 @@ public class GenericGroundEnemy : Enemy
         JumpCheck();
         Jump();
         Gravity();
+    }
+
+    private void IsMoving() {
+        if(Mathf.Abs(tempVelocity.x) > 0.1f) {
+            animator.SetBool("isWalking", true);
+        }
+        else {
+            animator.SetBool("isWalking", false);
+        }
     }
 }

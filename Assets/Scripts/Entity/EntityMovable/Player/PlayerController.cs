@@ -244,8 +244,8 @@ public class PlayerController : EntityMovable
                                                                                                                                 // collider went inside the
                                                                                                                                 // walls, causing this to
                                                                                                                                 // activate
-            , entityCollider.direction, 0, Vector2.down, 0.1f, ~entityLayer); //hits sends an capsule cast a little bit smaller than the player
-        //it`s a little smaller to prevent collision problems
+            , entityCollider.direction, 0, Vector2.down, 0.1f, ~entityLayer);
+        
 
         //fixing oneway platforms problem
         float offset = entityCollider.bounds.size.y * 0.05f; // 5% of the player's height
@@ -265,7 +265,6 @@ public class PlayerController : EntityMovable
         hittedWallRight = Physics2D.CapsuleCast(entityCollider.bounds.center, entityCollider.bounds.size
            , entityCollider.direction, 0, Vector2.right, 0.1f, ~entityLayer);
         if (hittedCeiling) tempVelocity.y = Mathf.Min(0, tempVelocity.y);
-
     }
 
     private void ApexModifiers()

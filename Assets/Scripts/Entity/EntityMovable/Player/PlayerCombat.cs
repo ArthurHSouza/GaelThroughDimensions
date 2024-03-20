@@ -22,7 +22,7 @@ public class PlayerCombat : MonoBehaviour
 
     void Attack()
     {
-        //Player an attack animation
+        //Player attack animation
         animator.SetTrigger("Attack");
 
         //Detect entities in range of attack
