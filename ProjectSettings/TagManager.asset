@@ -4,6 +4,10 @@
 TagManager:
   serializedVersion: 2
   tags:
+  - HookSpot
+  - SwingSpot
+  - Pullable
+  - Thrust
   - PatrolPointTag
   layers:
   - Default
@@ -12,6 +16,8 @@ TagManager:
   - Player
   - Water
   - UI
+  - OneWayPlatforms
+  - Hookable
   - Enemy
   - Obstacle
   - 
