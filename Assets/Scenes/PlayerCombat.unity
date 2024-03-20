@@ -1087,13 +1087,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1977808291738543906, guid: b8a0933dac35b554285f2403c19c6dda, type: 3}
+      propertyPath: animator
+      value: 
+      objectReference: {fileID: 1004945807}
+    - target: {fileID: 1977808291738543906, guid: b8a0933dac35b554285f2403c19c6dda, type: 3}
       propertyPath: playerAnimator
       value: 
       objectReference: {fileID: 1004945807}
     - target: {fileID: 2197757329376937635, guid: b8a0933dac35b554285f2403c19c6dda, type: 3}
       propertyPath: animator
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1004945807}
     - target: {fileID: 2197757329376937635, guid: b8a0933dac35b554285f2403c19c6dda, type: 3}
       propertyPath: maxHealth
       value: 100
@@ -3685,6 +3689,10 @@ PrefabInstance:
       propertyPath: maxHealth
       value: 100
       objectReference: {fileID: 0}
+    - target: {fileID: 1168519358884729694, guid: 0e6fe94b27631b1499572404b74fc61e, type: 3}
+      propertyPath: attackPoint
+      value: 
+      objectReference: {fileID: 501138022}
     - target: {fileID: 1168519358884729694, guid: 0e6fe94b27631b1499572404b74fc61e, type: 3}
       propertyPath: entityLayer.m_Bits
       value: 320

@@ -13,28 +13,27 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] protected float attackRange = 0.5f;
     [SerializeField] protected float attackDamage = 20;
 
-    void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.Mouse0)){
-            Attack();
-        }
+    void Update() {
+        Attack();
     }
 
     void Attack()
     {
-        //Player attack animation
-        animator.SetTrigger("Attack");
+        if(Input.GetKeyDown(KeyCode.Mouse0)) {
+            //Player attack animation
+            animator.SetTrigger("Attack");
 
-        //Detect entities in range of attack
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
+            //Detect entities in range of attack
+            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
 
-        //Damage the entity
-        foreach(Collider2D enemy in hitEnemies) {
-            enemy.GetComponent<Entity>().TakeDamage(attackDamage);
+            //Damages entities
+            foreach(Collider2D enemy in hitEnemies) {
+                enemy.GetComponent<Entity>().TakeDamage(attackDamage);
+            }
         }
     }
 
-    //Attack point of the sword
+    //Attack point of the melee weapon
     void OnDrawGizmosSelected() { 
         if(attackPoint == null)
             return;

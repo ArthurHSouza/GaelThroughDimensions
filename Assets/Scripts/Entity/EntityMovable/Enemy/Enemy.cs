@@ -29,6 +29,9 @@ public class Enemy : EntityMovable
     //protected Potion potionDropped;
     protected Vector2 target;
 
+
+    [SerializeField] protected float attackDamage = 10;
+
     override protected void onStart()
     {
         base.onStart();
@@ -197,6 +200,13 @@ public class Enemy : EntityMovable
             shallPatrolRight = !shallPatrolRight;
             shallWaitToPatrol = true;
             timeWhenReachedPP = Time.time;
+        }
+    }
+
+    //The player is damaged when colliding with the enemy
+    void OnCollisionStay2D(Collision2D collision){
+        if(collision.gameObject.CompareTag("Player")){
+            player.GetComponent<Entity>().TakeDamage(attackDamage);
         }
     }
 }

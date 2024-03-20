@@ -25,7 +25,7 @@ public abstract class Entity : MonoBehaviour
         }
     }
 
-    // Método para morrer
+    // Entity dies
     protected virtual void Die() {
         //Die Animation
         animator.SetBool("isDead", true);

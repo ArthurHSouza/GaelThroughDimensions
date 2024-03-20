@@ -88,6 +88,10 @@ public class PlayerController : EntityMovable
     [SerializeField] private float  doubleJumpBoost;
     private bool canDoubleJump = true;
 
+    //Combat
+    private float damageInterval = 1f;
+    private bool canDamage = true;
+
 
     void Start()
     {
@@ -406,5 +410,23 @@ public class PlayerController : EntityMovable
             isHoldingJump = false;
         }
 
+    }
+
+    public override void TakeDamage(float damage) {
+        if (canDamage) {
+            health -= damage;
+            animator.SetTrigger("Hurt");
+
+            if (health <= 0) {
+                Die();
+            }
+            canDamage = false;
+            Invoke("ResetDamageTimer", damageInterval);
+        }
+    }
+
+    private void ResetDamageTimer() {
+        // Permite causar dano novamente
+        canDamage = true;
     }
 }
