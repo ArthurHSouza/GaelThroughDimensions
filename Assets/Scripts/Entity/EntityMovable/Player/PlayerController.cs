@@ -42,6 +42,8 @@ public class PlayerController : EntityMovable
     private GameObject oneWayPlatformDescended;
     private bool lastCollisionWasOneWay;
     private bool isInsideOneWayPlatforms;
+    private bool jumpBufferCondition;
+    private bool coyoteCondition;
 
     //Mobility
     private float originalMaxSpeed;
@@ -159,7 +161,7 @@ public class PlayerController : EntityMovable
         isWallJumping = false;
     }
     private void DoubleJump() {
-        if (canDoubleJump && pressedJump) {
+        if (canDoubleJump && pressedJump && !coyoteCondition) {
             canDoubleJump = false;
             isJumping = true;
             tempVelocity.y = jumpForce * doubleJumpBoost;
@@ -292,8 +294,8 @@ public class PlayerController : EntityMovable
         if (isGrounded) lastTimeTouchedGround = Time.time; //checking the last frame that the player was on the ground
         if (pressedJump) jumpBuffer = Time.time; //checking the frame that the player pressed jump
 
-        bool jumpBufferCondition = Time.time - jumpBuffer <= jumpBufferDuration;
-        bool coyoteCondition = Time.time - lastTimeTouchedGround <= coyoteTime;
+        jumpBufferCondition = Time.time - jumpBuffer <= jumpBufferDuration;
+        coyoteCondition = Time.time - lastTimeTouchedGround <= coyoteTime;
 
         if (jumpBufferCondition && coyoteCondition)
         {
