@@ -1,13 +1,38 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.EditorTools;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class RoomManager : MonoBehaviour
 {
-    //detect what door the player used, also assign an position to each entrance
+    private bool isChangingRooms;
 
-    private string GetActiveRoom() {
-        return SceneManager.GetActiveScene().name;
+
+    public void LoadRoom(string sceneName, string targetDoorName){
+        StartCoroutine(LoadRoomCoroutine(sceneName, targetDoorName));
+    }
+    public IEnumerator LoadRoomCoroutine(string sceneName, string targetDoorName ) {
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+        }
+        isChangingRooms = true;
+        SpawnPlayer(targetDoorName);
+    }
+
+    private void SpawnPlayer(string doorToSpawnTo) {
+        GameObject targetDoor = GameObject.Find(doorToSpawnTo);
+        if (targetDoor != null)
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            player.transform.position = targetDoor.transform.position;
+            isChangingRooms = false;
+        }
+        else {
+            Debug.LogWarning("Couldn't find the target door, check the name again");
+        }
+        
     }
 }

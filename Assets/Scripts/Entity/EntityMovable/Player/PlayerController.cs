@@ -353,8 +353,11 @@ public class PlayerController : EntityMovable
     private IEnumerator renableOneWayPlatform(GameObject collision) {
         doubleTapped = false;
         yield return new WaitForSeconds(0.5f);
-        collision.gameObject.GetComponent<Collider2D>().enabled = true;
-        oneWayPlatformDescended = null;
+        if(collision != null){
+            collision.gameObject.GetComponent<Collider2D>().enabled = true;
+            oneWayPlatformDescended = null;
+        }
+        
     }
 
     //player input

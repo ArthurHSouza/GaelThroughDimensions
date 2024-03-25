@@ -5,15 +5,24 @@ using UnityEngine.SceneManagement;
 
 public class RoomLoader : MonoBehaviour
 {
-    [SerializeField] private float secondsBeforeLoad;
     [SerializeField] private string sceneName;
-    private void OnTriggerEnter2D(Collider2D collision)
+    [SerializeField]
+    [Tooltip("Target door name to spawn to, it can be an empty gameobject just with transform")]
+    private string targetDoorName;
+    private RoomManager roomManager;
+
+    private void Awake()
     {
-        if (collision.CompareTag("Player")) Invoke("LoadScene", secondsBeforeLoad);
+        roomManager = GameObject.Find("RoomManager").GetComponent<RoomManager>();
     }
 
-    private void LoadScene()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        SceneManager.LoadScene(sceneName);
+        if (collision.CompareTag("Player")) Invoke("LoadSceneWithDelay",0);
+    }
+
+    private void LoadSceneWithDelay()
+    {
+        roomManager.LoadRoom(sceneName,targetDoorName);
     }
 }
