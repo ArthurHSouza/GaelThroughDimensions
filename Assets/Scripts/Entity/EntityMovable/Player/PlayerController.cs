@@ -46,7 +46,12 @@ public class PlayerController : EntityMovable
     private bool coyoteCondition;
 
     //Mobility
+    [Header("Mobility")]
+    [SerializeField] private float maxSlopeAngle;
     private float originalMaxSpeed;
+    private float slopeAngle;
+    private Vector2 slopeTargetVector;
+    private bool isOnSlope;
 
     //Dash
     [Header("Dash")]
@@ -102,6 +107,7 @@ public class PlayerController : EntityMovable
     void Update()
     {
         CollisionCheck();
+        SlopeCheck();
         JumpCheck();
         ApexModifiers();
         LastDirectionLooked();
@@ -126,50 +132,7 @@ public class PlayerController : EntityMovable
         if (pressedJump) { ResetJumpAfterOneLateFrame(); }
     }
 
-    private void LastDirectionLooked() {
-
-        if (lastDirection == 0) lastDirection = 1; //initialization
-        if (horizontalInput == 0 && !isGrounded && Mathf.Abs(rb.velocity.x) > 0) lastDirection = (int)Mathf.Sign(rb.velocity.x); //to fix player hooking
-                                                                                                                                 //and changing direction
-        if (horizontalInput > 0) lastDirection = 1;
-        if (horizontalInput < 0) lastDirection = -1;
-    }
-    private void WallJump() {
-        if ((hittedWallRight || hittedWallLeft) && !isGrounded) {
-            //tempVelocity.y += Mathf.Abs(gravity/1.2f);//makes the player fall half slower but create a bug
-            tempVelocity.x = 0;//stopping the player on the wall
-            if (pressedJump) {
-                tempVelocity.x = hittedWallLeft ? maxSpeed : -maxSpeed;
-                isWallJumping = true;
-                if ((lastJumpedWall == "right" && hittedWallRight) || (lastJumpedWall == "left" && hittedWallLeft)) applyWallPenalty = true;
-                lastJumpedWall = hittedWallRight? "right":"left";
-                wallJumpSpeed = tempVelocity.x;
-                Invoke("DisableWallJumping",wallJumpBoostDuration);
-            }
-        }
-        if (isWallJumping) {
-            tempVelocity.y = applyWallPenalty? jumpForce / 2 * wallJumpBoost: jumpForce * wallJumpBoost;
-            tempVelocity.x = wallJumpSpeed;//maintaining walljump speed
-        }
-        if (isGrounded) {
-            applyWallPenalty = false;
-            lastJumpedWall = "";
-            isWallJumping = false;
-        }
-    }
-    private void DisableWallJumping() {
-        isWallJumping = false;
-    }
-    private void DoubleJump() {
-        if (canDoubleJump && pressedJump && !coyoteCondition) {
-            canDoubleJump = false;
-            isJumping = true;
-            tempVelocity.y = jumpForce * doubleJumpBoost;
-        }
-        if (isGrounded) {
-            canDoubleJump = true;
-        }
-    }
+    //Hook
     private void Hook() {
         if (canHook && pressedHook && !plungingCondition && !plgAtt.isPlunging && !hook.isHooking && timeSinceLastHook > hookCooldown) {
             switch (hook.GetTargetObjectTag()) {
@@ -208,6 +171,7 @@ public class PlayerController : EntityMovable
         }
     }
 
+    //Dash
     private void Dash() {
         if (pressedDash && canDash) {
             dash.ActivateDash(lastDirection);
@@ -216,10 +180,16 @@ public class PlayerController : EntityMovable
         if(isGrounded) canDash = true;
     }
 
+    //Walk
     override protected void Walk() {
         if (horizontalInput != 0 && isGrounded)
         { //accelerates the player accordingly to the input
             tempVelocity.x = Mathf.Abs(tempVelocity.x) < maxSpeed ? tempVelocity.x + (horizontalInput * acceleration) : maxSpeed * horizontalInput;
+            if (isOnSlope)
+            {
+                float slopeMultiplier = Mathf.Cos(slopeAngle * Mathf.Deg2Rad);
+                tempVelocity.x *= slopeMultiplier;
+            }
         }
         else if (!isGrounded){
             //speed on air
@@ -240,36 +210,44 @@ public class PlayerController : EntityMovable
 
     }
 
-    private void CollisionCheck() {
-        isGrounded = Physics2D.CapsuleCast(entityCollider.bounds.center, entityCollider.bounds.size - new Vector3(0.5f, 0f, 0f) // the 0.5 is because when
-                                                                                                                                // flipping the gameobject the
-                                                                                                                                // collider went inside the
-                                                                                                                                // walls, causing this to
-                                                                                                                                // activate
-            , entityCollider.direction, 0, Vector2.down, 0.1f, ~entityLayer); //hits sends an capsule cast a little bit smaller than the player
-        //it`s a little smaller to prevent collision problems
+    private void SlopeCheck()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, entityCollider.bounds.size.y/2 +1f, ~entityLayer);
 
-        //fixing oneway platforms problem
-        float offset = entityCollider.bounds.size.y * 0.05f; // 5% of the player's height
-        Vector2 startPoint = entityCollider.bounds.center + new Vector3(0, offset, 0);
+        if (hit.collider != null)
+        {
+            slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
+            if (slopeAngle > 5 && slopeAngle <= maxSlopeAngle)
+            {
+                float radians = slopeAngle * Mathf.Deg2Rad;
 
-        isInsideOneWayPlatforms = Physics2D.CapsuleCast(startPoint, entityCollider.bounds.size
-                , entityCollider.direction, 0, Vector2.down, 0.1f, oneWayPlatforms);
-        if (isInsideOneWayPlatforms) tempVelocity.y = jumpForce; //player keep going up if it is still inside the platform
-
-
-        hittedCeiling = Physics2D.CapsuleCast(entityCollider.bounds.center, entityCollider.bounds.size - new Vector3(0.2f, 0f, 0f)
-            , entityCollider.direction, 0, Vector2.up, 0.1f, ~entityLayer & ~oneWayPlatforms); //to prevent jumps that take too long after player hitting
-                                                                                               //the head
-
-        hittedWallLeft = Physics2D.CapsuleCast(entityCollider.bounds.center, entityCollider.bounds.size  
-            , entityCollider.direction, 0, Vector2.left, 0.1f, ~entityLayer);
-        hittedWallRight = Physics2D.CapsuleCast(entityCollider.bounds.center, entityCollider.bounds.size
-           , entityCollider.direction, 0, Vector2.right, 0.1f, ~entityLayer);
-        if (hittedCeiling) tempVelocity.y = Mathf.Min(0, tempVelocity.y);
-
+                slopeTargetVector = new Vector2(Mathf.Cos(radians), Mathf.Sin(radians)); //transform the angle in a vector
+                Debug.Log("Angle to slope: " + slopeAngle + " degrees");
+                Debug.Log("Slope vector: " + slopeTargetVector);
+                isOnSlope = true;
+            }
+            else {
+                isOnSlope = false;
+            }
+        }
+        else
+        {
+            isOnSlope = false;
+        }
     }
 
+
+    private void LastDirectionLooked()
+    {
+
+        if (lastDirection == 0) lastDirection = 1; //initialization
+        if (horizontalInput == 0 && !isGrounded && Mathf.Abs(rb.velocity.x) > 0) lastDirection = (int)Mathf.Sign(rb.velocity.x); //to fix player hooking
+                                                                                                                                 //and changing direction
+        if (horizontalInput > 0) lastDirection = 1;
+        if (horizontalInput < 0) lastDirection = -1;
+    }
+
+    //Jumping
     private void ApexModifiers()
     {
         Vector2 magnitude = new Vector2(0, Mathf.Abs(tempVelocity.y));
@@ -321,20 +299,86 @@ public class PlayerController : EntityMovable
         if (isGrounded && !isJumping) tempVelocity.y = 0;
     }
 
+    private void WallJump()
+    {
+        if ((hittedWallRight || hittedWallLeft) && !isGrounded)
+        {
+            //tempVelocity.y += Mathf.Abs(gravity/1.2f);//makes the player fall half slower but create a bug
+            tempVelocity.x = 0;//stopping the player on the wall
+            if (pressedJump)
+            {
+                tempVelocity.x = hittedWallLeft ? maxSpeed : -maxSpeed;
+                isWallJumping = true;
+                if ((lastJumpedWall == "right" && hittedWallRight) || (lastJumpedWall == "left" && hittedWallLeft)) applyWallPenalty = true;
+                lastJumpedWall = hittedWallRight ? "right" : "left";
+                wallJumpSpeed = tempVelocity.x;
+                Invoke("DisableWallJumping", wallJumpBoostDuration);
+            }
+        }
+        if (isWallJumping)
+        {
+            tempVelocity.y = applyWallPenalty ? jumpForce / 2 * wallJumpBoost : jumpForce * wallJumpBoost;
+            tempVelocity.x = wallJumpSpeed;//maintaining walljump speed
+        }
+        if (isGrounded)
+        {
+            applyWallPenalty = false;
+            lastJumpedWall = "";
+            isWallJumping = false;
+        }
+    }
+    private void DisableWallJumping()
+    {
+        isWallJumping = false;
+    }
+    private void DoubleJump()
+    {
+        if (canDoubleJump && pressedJump && !coyoteCondition)
+        {
+            canDoubleJump = false;
+            isJumping = true;
+            tempVelocity.y = jumpForce * doubleJumpBoost;
+        }
+        if (isGrounded)
+        {
+            canDoubleJump = true;
+        }
+    }
+
+    //Plunging attack
     private void PlungingAttack() {
         if (plungingCondition && !plgAtt.isPlunging) { plgAtt.Attack(); }
     }
 
-    private void PlatformDescent() {
-        if (lastCollisionWasOneWay && doubleTapped) {
-            oneWayPlatformDescended.gameObject.GetComponent<Collider2D>().enabled = false;
+    //Collision
+    private void CollisionCheck() {
+        isGrounded = Physics2D.CapsuleCast(entityCollider.bounds.center, entityCollider.bounds.size - new Vector3(0.5f, 0f, 0f) // the 0.5 is because when
+                                                                                                                                // flipping the gameobject the
+                                                                                                                                // collider went inside the
+                                                                                                                                // walls, causing this to
+                                                                                                                                // activate
+            , entityCollider.direction, 0, Vector2.down, 0.1f, ~entityLayer); //hits sends an capsule cast a little bit smaller than the player
+        //it`s a little smaller to prevent collision problems
 
-            StartCoroutine(renableOneWayPlatform(oneWayPlatformDescended));
-        }
-        else
-        {
-            doubleTapped = false;
-        }
+        //fixing oneway platforms problem
+        float offset = entityCollider.bounds.size.y * 0.05f; // 5% of the player's height
+        Vector2 startPoint = entityCollider.bounds.center + new Vector3(0, offset, 0);
+
+        isInsideOneWayPlatforms = Physics2D.CapsuleCast(startPoint, entityCollider.bounds.size
+                , entityCollider.direction, 0, Vector2.down, 0.1f, oneWayPlatforms);
+        if (isInsideOneWayPlatforms) tempVelocity.y = jumpForce; //player keep going up if it is still inside the platform
+
+
+        hittedCeiling = Physics2D.CapsuleCast(entityCollider.bounds.center, entityCollider.bounds.size - new Vector3(0.2f, 0f, 0f)
+            , entityCollider.direction, 0, Vector2.up, 0.1f, ~entityLayer & ~oneWayPlatforms); //to prevent jumps that take too long after player hitting
+                                                                                               //the head
+
+        hittedWallLeft = Physics2D.CapsuleCast(entityCollider.bounds.center, entityCollider.bounds.size  
+            , entityCollider.direction, 0, Vector2.left, 0.1f, ~entityLayer);
+        hittedWallRight = Physics2D.CapsuleCast(entityCollider.bounds.center, entityCollider.bounds.size
+           , entityCollider.direction, 0, Vector2.right, 0.1f, ~entityLayer);
+        if (hittedCeiling) tempVelocity.y = Mathf.Min(0, tempVelocity.y);
+
     }
 
     private void OnCollisionStay2D(Collision2D collision)
@@ -350,6 +394,19 @@ public class PlayerController : EntityMovable
         
     }
 
+    //One way platforms
+    private void PlatformDescent() {
+        if (lastCollisionWasOneWay && doubleTapped) {
+            oneWayPlatformDescended.gameObject.GetComponent<Collider2D>().enabled = false;
+
+            StartCoroutine(renableOneWayPlatform(oneWayPlatformDescended));
+        }
+        else
+        {
+            doubleTapped = false;
+        }
+    }
+
     private IEnumerator renableOneWayPlatform(GameObject collision) {
         doubleTapped = false;
         yield return new WaitForSeconds(0.5f);
@@ -360,8 +417,7 @@ public class PlayerController : EntityMovable
         
     }
 
-    //player input
-
+    //Player input
     public void InputOneWayPlatformsDescendCheck(InputAction.CallbackContext context)
     {
         if (context.performed)
@@ -398,19 +454,5 @@ public class PlayerController : EntityMovable
     public void InputDash(InputAction.CallbackContext context)
     {
         pressedDash = context.performed;
-    }
-    //old input system
-    private void PlayerInput(){ //only the jump here because for some reason it doesn`t work with the new system
-        //jump
-        pressedJump = Input.GetKeyDown(KeyCode.Space);
-        if (pressedJump)
-        {
-            isHoldingJump = true;
-        }
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            isHoldingJump = false;
-        }
-
     }
 }

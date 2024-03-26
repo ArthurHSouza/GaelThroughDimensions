@@ -515,6 +515,7 @@ MonoBehaviour:
   apexModifierDuration: 0.075
   apexModifierTolerance: 3
   apexModifierSpeedBoost: 1.025
+  maxSlopeAngle: 60
   dashEnabled: 1
   hookEnabled: 1
   jumpMultiplierAfterRope: 1.5

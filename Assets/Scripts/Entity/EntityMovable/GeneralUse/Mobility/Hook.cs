@@ -68,7 +68,7 @@ public class Hook : MonoBehaviour
     private DistanceJoint2D distanceJoint;
     public bool cancelRope;
 
-    private void Start()
+    private void Awake()
     {
         GameObject colliderObject = new GameObject("HookDetectionCollider"); //creates a game object for the circle collider
         colliderObject.transform.parent = transform;
@@ -93,6 +93,8 @@ public class Hook : MonoBehaviour
         if (arrowSprite != null)
         {
             arrow = new GameObject("HookDirectionArrow");
+            arrow.transform.parent = transform;
+            arrow.transform.localPosition = Vector3.zero;
             SpriteRenderer spriteRenderer = arrow.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = arrowSprite;
         }
